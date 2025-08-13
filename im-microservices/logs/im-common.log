@@ -1,0 +1,493 @@
+2025-08-13 17:46:06.996 [main] INFO  com.acme.im.business.BusinessServiceApplication - Starting BusinessServiceApplication using Java 17.0.14 with PID 76398 (/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/target/classes started by aguang in /Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices)
+2025-08-13 17:46:06.997 [main] DEBUG com.acme.im.business.BusinessServiceApplication - Running with Spring Boot v3.2.8, Spring v6.1.11
+2025-08-13 17:46:06.997 [main] INFO  com.acme.im.business.BusinessServiceApplication - The following 1 profile is active: "common"
+2025-08-13 17:46:07.294 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-08-13 17:46:07.294 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-08-13 17:46:07.302 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 2 ms. Found 0 Redis repository interfaces.
+2025-08-13 17:46:07.305 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-08-13 17:46:07.305 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-13 17:46:07.381 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 75 ms. Found 1 JPA repository interface.
+2025-08-13 17:46:07.564 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-08-13 17:46:07.564 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-08-13 17:46:07.567 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.acme.im.business.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-08-13 17:46:07.567 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 2 ms. Found 0 Redis repository interfaces.
+2025-08-13 17:46:07.617 [main] WARN  org.mybatis.spring.mapper.ClassPathMapperScanner - No MyBatis mapper was found in '[com.acme.im.business]' package. Please check your configuration.
+2025-08-13 17:46:07.973 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2025-08-13 17:46:07.977 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2025-08-13 17:46:07.977 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.26]
+2025-08-13 17:46:08.000 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-08-13 17:46:08.001 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 986 ms
+2025-08-13 17:46:08.108 [main] DEBUG c.a.im.common.security.jwt.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2025-08-13 17:46:08.116 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: Failed to initialize dependency 'dataSourceScriptDatabaseInitializer' of LoadTimeWeaverAware bean 'entityManagerFactory': Error creating bean with name 'dataSourceScriptDatabaseInitializer' defined in class path resource [org/springframework/boot/autoconfigure/sql/init/DataSourceInitializationConfiguration.class]: Unsatisfied dependency expressed through method 'dataSourceScriptDatabaseInitializer' parameter 0: Error creating bean with name 'primaryDataSource' defined in class path resource [com/acme/im/common/infrastructure/database/config/DatabaseConfig.class]: Failed to instantiate [javax.sql.DataSource]: Factory method 'primaryDataSource' threw exception with message: Error creating bean with name 'primaryHikariConfig' defined in class path resource [com/acme/im/common/infrastructure/database/config/DatabaseConfig.class]: Failed to instantiate [com.zaxxer.hikari.HikariConfig]: Factory method 'primaryHikariConfig' threw exception with message: null
+2025-08-13 17:46:08.116 [main] INFO  org.apache.catalina.core.StandardService - Stopping service [Tomcat]
+2025-08-13 17:46:08.125 [main] INFO  o.s.b.a.logging.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-08-13 17:46:08.131 [main] ERROR org.springframework.boot.SpringApplication - Application run failed
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: Failed to initialize dependency 'dataSourceScriptDatabaseInitializer' of LoadTimeWeaverAware bean 'entityManagerFactory': Error creating bean with name 'dataSourceScriptDatabaseInitializer' defined in class path resource [org/springframework/boot/autoconfigure/sql/init/DataSourceInitializationConfiguration.class]: Unsatisfied dependency expressed through method 'dataSourceScriptDatabaseInitializer' parameter 0: Error creating bean with name 'primaryDataSource' defined in class path resource [com/acme/im/common/infrastructure/database/config/DatabaseConfig.class]: Failed to instantiate [javax.sql.DataSource]: Factory method 'primaryDataSource' threw exception with message: Error creating bean with name 'primaryHikariConfig' defined in class path resource [com/acme/im/common/infrastructure/database/config/DatabaseConfig.class]: Failed to instantiate [com.zaxxer.hikari.HikariConfig]: Factory method 'primaryHikariConfig' threw exception with message: null
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:326)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:205)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:954)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:625)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:335)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1363)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1352)
+	at com.acme.im.business.BusinessServiceApplication.main(BusinessServiceApplication.java:32)
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'dataSourceScriptDatabaseInitializer' defined in class path resource [org/springframework/boot/autoconfigure/sql/init/DataSourceInitializationConfiguration.class]: Unsatisfied dependency expressed through method 'dataSourceScriptDatabaseInitializer' parameter 0: Error creating bean with name 'primaryDataSource' defined in class path resource [com/acme/im/common/infrastructure/database/config/DatabaseConfig.class]: Failed to instantiate [javax.sql.DataSource]: Factory method 'primaryDataSource' threw exception with message: Error creating bean with name 'primaryHikariConfig' defined in class path resource [com/acme/im/common/infrastructure/database/config/DatabaseConfig.class]: Failed to instantiate [com.zaxxer.hikari.HikariConfig]: Factory method 'primaryHikariConfig' threw exception with message: null
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:795)
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:542)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1355)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1185)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:562)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:335)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:200)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:313)
+	... 10 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'primaryDataSource' defined in class path resource [com/acme/im/common/infrastructure/database/config/DatabaseConfig.class]: Failed to instantiate [javax.sql.DataSource]: Factory method 'primaryDataSource' threw exception with message: Error creating bean with name 'primaryHikariConfig' defined in class path resource [com/acme/im/common/infrastructure/database/config/DatabaseConfig.class]: Failed to instantiate [com.zaxxer.hikari.HikariConfig]: Factory method 'primaryHikariConfig' threw exception with message: null
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:648)
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:485)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1355)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1185)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:562)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:335)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:200)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1443)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1353)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:904)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:782)
+	... 20 common frames omitted
+Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [javax.sql.DataSource]: Factory method 'primaryDataSource' threw exception with message: Error creating bean with name 'primaryHikariConfig' defined in class path resource [com/acme/im/common/infrastructure/database/config/DatabaseConfig.class]: Failed to instantiate [com.zaxxer.hikari.HikariConfig]: Factory method 'primaryHikariConfig' threw exception with message: null
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:178)
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:644)
+	... 34 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'primaryHikariConfig' defined in class path resource [com/acme/im/common/infrastructure/database/config/DatabaseConfig.class]: Failed to instantiate [com.zaxxer.hikari.HikariConfig]: Factory method 'primaryHikariConfig' threw exception with message: null
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:648)
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:485)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1355)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1185)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:562)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:335)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:200)
+	at org.springframework.context.annotation.ConfigurationClassEnhancer$BeanMethodInterceptor.resolveBeanReference(ConfigurationClassEnhancer.java:380)
+	at org.springframework.context.annotation.ConfigurationClassEnhancer$BeanMethodInterceptor.intercept(ConfigurationClassEnhancer.java:351)
+	at com.acme.im.common.infrastructure.database.config.DatabaseConfig$$SpringCGLIB$$0.primaryHikariConfig(<generated>)
+	at com.acme.im.common.infrastructure.database.config.DatabaseConfig.primaryDataSource(DatabaseConfig.java:70)
+	at com.acme.im.common.infrastructure.database.config.DatabaseConfig$$SpringCGLIB$$0.CGLIB$primaryDataSource$1(<generated>)
+	at com.acme.im.common.infrastructure.database.config.DatabaseConfig$$SpringCGLIB$$FastClass$$1.invoke(<generated>)
+	at org.springframework.cglib.proxy.MethodProxy.invokeSuper(MethodProxy.java:258)
+	at org.springframework.context.annotation.ConfigurationClassEnhancer$BeanMethodInterceptor.intercept(ConfigurationClassEnhancer.java:348)
+	at com.acme.im.common.infrastructure.database.config.DatabaseConfig$$SpringCGLIB$$0.primaryDataSource(<generated>)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:146)
+	... 35 common frames omitted
+Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [com.zaxxer.hikari.HikariConfig]: Factory method 'primaryHikariConfig' threw exception with message: null
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:178)
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:644)
+	... 58 common frames omitted
+Caused by: java.lang.NullPointerException: null
+	at java.base/java.util.concurrent.ConcurrentHashMap.putVal(ConcurrentHashMap.java:1011)
+	at java.base/java.util.concurrent.ConcurrentHashMap.putIfAbsent(ConcurrentHashMap.java:1541)
+	at java.base/java.lang.ClassLoader.getClassLoadingLock(ClassLoader.java:671)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClassOrNull(BuiltinClassLoader.java:651)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:639)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:188)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:525)
+	at com.zaxxer.hikari.HikariConfig.attemptFromContextLoader(HikariConfig.java:967)
+	at com.zaxxer.hikari.HikariConfig.setDriverClassName(HikariConfig.java:477)
+	at com.acme.im.common.infrastructure.database.config.DatabaseConfig.createHikariConfig(DatabaseConfig.java:40)
+	at com.acme.im.common.infrastructure.database.config.DatabaseConfig.primaryHikariConfig(DatabaseConfig.java:61)
+	at com.acme.im.common.infrastructure.database.config.DatabaseConfig$$SpringCGLIB$$0.CGLIB$primaryHikariConfig$0(<generated>)
+	at com.acme.im.common.infrastructure.database.config.DatabaseConfig$$SpringCGLIB$$FastClass$$1.invoke(<generated>)
+	at org.springframework.cglib.proxy.MethodProxy.invokeSuper(MethodProxy.java:258)
+	at org.springframework.context.annotation.ConfigurationClassEnhancer$BeanMethodInterceptor.intercept(ConfigurationClassEnhancer.java:348)
+	at com.acme.im.common.infrastructure.database.config.DatabaseConfig$$SpringCGLIB$$0.primaryHikariConfig(<generated>)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:146)
+	... 59 common frames omitted
+2025-08-13 18:01:00.672 [main] INFO  com.acme.im.business.BusinessServiceApplication - Starting BusinessServiceApplication using Java 17.0.14 with PID 81769 (/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/target/classes started by aguang in /Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices)
+2025-08-13 18:01:00.672 [main] DEBUG com.acme.im.business.BusinessServiceApplication - Running with Spring Boot v3.2.8, Spring v6.1.11
+2025-08-13 18:01:00.672 [main] INFO  com.acme.im.business.BusinessServiceApplication - The following 1 profile is active: "common"
+2025-08-13 18:01:00.928 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-08-13 18:01:00.928 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-08-13 18:01:00.935 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 2 ms. Found 0 Redis repository interfaces.
+2025-08-13 18:01:00.937 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-08-13 18:01:00.937 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-13 18:01:01.002 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 64 ms. Found 1 JPA repository interface.
+2025-08-13 18:01:01.149 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-08-13 18:01:01.149 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-08-13 18:01:01.153 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.acme.im.business.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-08-13 18:01:01.153 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 4 ms. Found 0 Redis repository interfaces.
+2025-08-13 18:01:01.491 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2025-08-13 18:01:01.495 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2025-08-13 18:01:01.495 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.26]
+2025-08-13 18:01:01.515 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-08-13 18:01:01.515 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 827 ms
+2025-08-13 18:01:01.625 [main] DEBUG c.a.im.common.security.jwt.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2025-08-13 18:01:01.631 [main] INFO  c.acme.im.business.config.BusinessDataSourceConfig - 业务服务启用读写分离：写操作使用主库，读操作使用从库
+2025-08-13 18:01:01.648 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'userController' defined in file [/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/target/classes/com/acme/im/business/controller/UserController.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'userServiceImpl' defined in file [/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/target/classes/com/acme/im/business/service/impl/UserServiceImpl.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'userRepository' defined in com.acme.im.business.repository.UserRepository defined in @EnableJpaRepositories declared on BusinessServiceApplication: Cannot resolve reference to bean 'jpaSharedEM_entityManagerFactory' while setting bean property 'entityManager'
+2025-08-13 18:01:01.649 [main] INFO  org.apache.catalina.core.StandardService - Stopping service [Tomcat]
+2025-08-13 18:01:01.659 [main] INFO  o.s.b.a.logging.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-08-13 18:01:01.665 [main] ERROR o.s.b.diagnostics.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Parameter 0 of constructor in com.acme.im.business.service.impl.UserServiceImpl required a bean named 'entityManagerFactory' that could not be found.
+
+
+Action:
+
+Consider defining a bean named 'entityManagerFactory' in your configuration.
+
+2025-08-13 18:13:58.773 [main] INFO  com.acme.im.business.BusinessServiceApplication - Starting BusinessServiceApplication using Java 17.0.14 with PID 85121 (/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/target/classes started by aguang in /Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices)
+2025-08-13 18:13:58.773 [main] DEBUG com.acme.im.business.BusinessServiceApplication - Running with Spring Boot v3.2.8, Spring v6.1.11
+2025-08-13 18:13:58.774 [main] INFO  com.acme.im.business.BusinessServiceApplication - The following 1 profile is active: "common"
+2025-08-13 18:13:59.030 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-08-13 18:13:59.030 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-08-13 18:13:59.036 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 1 ms. Found 0 Redis repository interfaces.
+2025-08-13 18:13:59.038 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-08-13 18:13:59.038 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-13 18:13:59.040 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 0 ms. Found 0 JPA repository interfaces.
+2025-08-13 18:13:59.174 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-08-13 18:13:59.174 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-08-13 18:13:59.177 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 3 ms. Found 0 Redis repository interfaces.
+2025-08-13 18:13:59.556 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2025-08-13 18:13:59.560 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2025-08-13 18:13:59.560 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.26]
+2025-08-13 18:13:59.579 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-08-13 18:13:59.579 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 791 ms
+2025-08-13 18:13:59.685 [main] DEBUG c.a.im.common.security.jwt.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2025-08-13 18:13:59.691 [main] INFO  c.acme.im.business.config.BusinessDataSourceConfig - 业务服务启用读写分离：写操作使用主库，读操作使用从库
+2025-08-13 18:13:59.695 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'userController' defined in file [/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/target/classes/com/acme/im/business/controller/UserController.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'userServiceImpl' defined in file [/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/target/classes/com/acme/im/business/service/impl/UserServiceImpl.class]: Unsatisfied dependency expressed through constructor parameter 0: No qualifying bean of type 'com.acme.im.business.repository.UserRepository' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+2025-08-13 18:13:59.696 [main] INFO  org.apache.catalina.core.StandardService - Stopping service [Tomcat]
+2025-08-13 18:13:59.704 [main] INFO  o.s.b.a.logging.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-08-13 18:13:59.710 [main] ERROR o.s.b.diagnostics.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Parameter 0 of constructor in com.acme.im.business.service.impl.UserServiceImpl required a bean of type 'com.acme.im.business.repository.UserRepository' that could not be found.
+
+
+Action:
+
+Consider defining a bean of type 'com.acme.im.business.repository.UserRepository' in your configuration.
+
+2025-08-13 18:19:18.877 [main] INFO  com.acme.im.business.BusinessServiceApplication - Starting BusinessServiceApplication using Java 17.0.14 with PID 88646 (/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/target/classes started by aguang in /Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices)
+2025-08-13 18:19:18.878 [main] DEBUG com.acme.im.business.BusinessServiceApplication - Running with Spring Boot v3.2.8, Spring v6.1.11
+2025-08-13 18:19:18.879 [main] INFO  com.acme.im.business.BusinessServiceApplication - The following 1 profile is active: "common"
+2025-08-13 18:19:19.134 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-08-13 18:19:19.134 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-08-13 18:19:19.140 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 1 ms. Found 0 Redis repository interfaces.
+2025-08-13 18:19:19.283 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-08-13 18:19:19.283 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-13 18:19:19.290 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 5 ms. Found 0 JPA repository interfaces.
+2025-08-13 18:19:19.292 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-08-13 18:19:19.292 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-08-13 18:19:19.293 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 0 ms. Found 0 Redis repository interfaces.
+2025-08-13 18:19:19.415 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'methodValidationPostProcessor' defined in class path resource [org/springframework/boot/autoconfigure/validation/ValidationAutoConfiguration.class]: Unsatisfied dependency expressed through method 'methodValidationPostProcessor' parameter 0: Invalid bean definition with name 'userRepository' defined in file [/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/target/classes/com/acme/im/business/repository/UserRepository.class]: Invalid value type for attribute 'factoryBeanObjectType': java.lang.String
+2025-08-13 18:19:19.422 [main] INFO  o.s.b.a.logging.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-08-13 18:19:19.427 [main] ERROR org.springframework.boot.SpringApplication - Application run failed
+org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'methodValidationPostProcessor' defined in class path resource [org/springframework/boot/autoconfigure/validation/ValidationAutoConfiguration.class]: Unsatisfied dependency expressed through method 'methodValidationPostProcessor' parameter 0: Invalid bean definition with name 'userRepository' defined in file [/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/target/classes/com/acme/im/business/repository/UserRepository.class]: Invalid value type for attribute 'factoryBeanObjectType': java.lang.String
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:795)
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:542)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1355)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1185)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:562)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:337)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:335)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:205)
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.registerBeanPostProcessors(PostProcessorRegistrationDelegate.java:265)
+	at org.springframework.context.support.AbstractApplicationContext.registerBeanPostProcessors(AbstractApplicationContext.java:806)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:609)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:335)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1363)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1352)
+	at com.acme.im.business.BusinessServiceApplication.main(BusinessServiceApplication.java:21)
+Caused by: org.springframework.beans.factory.BeanDefinitionStoreException: Invalid bean definition with name 'userRepository' defined in file [/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/target/classes/com/acme/im/business/repository/UserRepository.class]: Invalid value type for attribute 'factoryBeanObjectType': java.lang.String
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.getTypeForFactoryBean(AbstractAutowireCapableBeanFactory.java:857)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.isTypeMatch(AbstractBeanFactory.java:663)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doGetBeanNamesForType(DefaultListableBeanFactory.java:575)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.getBeanNamesForType(DefaultListableBeanFactory.java:534)
+	at org.springframework.beans.factory.BeanFactoryUtils.beanNamesForTypeIncludingAncestors(BeanFactoryUtils.java:260)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.findAutowireCandidates(DefaultListableBeanFactory.java:1637)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1397)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1353)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:904)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:782)
+	... 19 common frames omitted
+2025-08-13 18:23:04.900 [main] INFO  com.acme.im.business.BusinessServiceApplication - Starting BusinessServiceApplication using Java 17.0.14 with PID 90369 (/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/target/classes started by aguang in /Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices)
+2025-08-13 18:23:04.902 [main] DEBUG com.acme.im.business.BusinessServiceApplication - Running with Spring Boot v3.2.8, Spring v6.1.11
+2025-08-13 18:23:04.903 [main] INFO  com.acme.im.business.BusinessServiceApplication - The following 1 profile is active: "common"
+2025-08-13 18:23:05.262 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-08-13 18:23:05.263 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-13 18:23:05.274 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 5 ms. Found 0 JPA repository interfaces.
+2025-08-13 18:23:05.278 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-08-13 18:23:05.279 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-08-13 18:23:05.282 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 1 ms. Found 0 Redis repository interfaces.
+2025-08-13 18:23:05.385 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanDefinitionStoreException: Invalid bean definition with name 'userRepository' defined in file [/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/target/classes/com/acme/im/business/repository/UserRepository.class]: Invalid value type for attribute 'factoryBeanObjectType': java.lang.String
+2025-08-13 18:23:05.392 [main] INFO  o.s.b.a.logging.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-08-13 18:23:05.397 [main] ERROR org.springframework.boot.SpringApplication - Application run failed
+org.springframework.beans.factory.BeanDefinitionStoreException: Invalid bean definition with name 'userRepository' defined in file [/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/target/classes/com/acme/im/business/repository/UserRepository.class]: Invalid value type for attribute 'factoryBeanObjectType': java.lang.String
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.getTypeForFactoryBean(AbstractAutowireCapableBeanFactory.java:857)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getType(AbstractBeanFactory.java:743)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.findAnnotationOnBean(DefaultListableBeanFactory.java:735)
+	at org.springframework.boot.sql.init.dependency.AnnotationDependsOnDatabaseInitializationDetector.detect(AnnotationDependsOnDatabaseInitializationDetector.java:36)
+	at org.springframework.boot.sql.init.dependency.DatabaseInitializationDependencyConfigurer$DependsOnDatabaseInitializationPostProcessor.detectDependsOnInitializationBeanNames(DatabaseInitializationDependencyConfigurer.java:152)
+	at org.springframework.boot.sql.init.dependency.DatabaseInitializationDependencyConfigurer$DependsOnDatabaseInitializationPostProcessor.postProcessBeanFactory(DatabaseInitializationDependencyConfigurer.java:115)
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:363)
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:197)
+	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:789)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:607)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:335)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1363)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1352)
+	at com.acme.im.business.BusinessServiceApplication.main(BusinessServiceApplication.java:17)
+2025-08-13 18:24:49.485 [main] INFO  com.acme.im.business.BusinessServiceApplication - Starting BusinessServiceApplication using Java 17.0.14 with PID 91048 (/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/target/classes started by aguang in /Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices)
+2025-08-13 18:24:49.486 [main] DEBUG com.acme.im.business.BusinessServiceApplication - Running with Spring Boot v3.2.8, Spring v6.1.11
+2025-08-13 18:24:49.486 [main] INFO  com.acme.im.business.BusinessServiceApplication - The following 1 profile is active: "common"
+2025-08-13 18:24:49.849 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-08-13 18:24:49.850 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-13 18:24:49.861 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 5 ms. Found 0 JPA repository interfaces.
+2025-08-13 18:24:49.865 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-08-13 18:24:49.865 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-08-13 18:24:49.869 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 1 ms. Found 0 Redis repository interfaces.
+2025-08-13 18:24:49.975 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanDefinitionStoreException: Invalid bean definition with name 'userRepository' defined in file [/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/target/classes/com/acme/im/business/repository/UserRepository.class]: Invalid value type for attribute 'factoryBeanObjectType': java.lang.String
+2025-08-13 18:24:49.982 [main] INFO  o.s.b.a.logging.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-08-13 18:24:49.987 [main] ERROR org.springframework.boot.SpringApplication - Application run failed
+org.springframework.beans.factory.BeanDefinitionStoreException: Invalid bean definition with name 'userRepository' defined in file [/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/target/classes/com/acme/im/business/repository/UserRepository.class]: Invalid value type for attribute 'factoryBeanObjectType': java.lang.String
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.getTypeForFactoryBean(AbstractAutowireCapableBeanFactory.java:857)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getType(AbstractBeanFactory.java:743)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.findAnnotationOnBean(DefaultListableBeanFactory.java:735)
+	at org.springframework.boot.sql.init.dependency.AnnotationDependsOnDatabaseInitializationDetector.detect(AnnotationDependsOnDatabaseInitializationDetector.java:36)
+	at org.springframework.boot.sql.init.dependency.DatabaseInitializationDependencyConfigurer$DependsOnDatabaseInitializationPostProcessor.detectDependsOnInitializationBeanNames(DatabaseInitializationDependencyConfigurer.java:152)
+	at org.springframework.boot.sql.init.dependency.DatabaseInitializationDependencyConfigurer$DependsOnDatabaseInitializationPostProcessor.postProcessBeanFactory(DatabaseInitializationDependencyConfigurer.java:115)
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:363)
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:197)
+	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:789)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:607)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:335)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1363)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1352)
+	at com.acme.im.business.BusinessServiceApplication.main(BusinessServiceApplication.java:17)
+2025-08-13 18:25:00.639 [main] INFO  com.acme.im.business.BusinessServiceApplication - Starting BusinessServiceApplication using Java 17.0.14 with PID 91102 (/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/target/classes started by aguang in /Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices)
+2025-08-13 18:25:00.641 [main] DEBUG com.acme.im.business.BusinessServiceApplication - Running with Spring Boot v3.2.8, Spring v6.1.11
+2025-08-13 18:25:00.641 [main] INFO  com.acme.im.business.BusinessServiceApplication - The following 1 profile is active: "common"
+2025-08-13 18:25:01.003 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-08-13 18:25:01.003 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-08-13 18:25:01.014 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 8 ms. Found 0 JPA repository interfaces.
+2025-08-13 18:25:01.018 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-08-13 18:25:01.018 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-08-13 18:25:01.022 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 1 ms. Found 0 Redis repository interfaces.
+2025-08-13 18:25:01.126 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanDefinitionStoreException: Invalid bean definition with name 'userRepository' defined in file [/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/target/classes/com/acme/im/business/repository/UserRepository.class]: Invalid value type for attribute 'factoryBeanObjectType': java.lang.String
+2025-08-13 18:25:01.133 [main] INFO  o.s.b.a.logging.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-08-13 18:25:01.139 [main] ERROR org.springframework.boot.SpringApplication - Application run failed
+org.springframework.beans.factory.BeanDefinitionStoreException: Invalid bean definition with name 'userRepository' defined in file [/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/target/classes/com/acme/im/business/repository/UserRepository.class]: Invalid value type for attribute 'factoryBeanObjectType': java.lang.String
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.getTypeForFactoryBean(AbstractAutowireCapableBeanFactory.java:857)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getType(AbstractBeanFactory.java:743)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.findAnnotationOnBean(DefaultListableBeanFactory.java:735)
+	at org.springframework.boot.sql.init.dependency.AnnotationDependsOnDatabaseInitializationDetector.detect(AnnotationDependsOnDatabaseInitializationDetector.java:36)
+	at org.springframework.boot.sql.init.dependency.DatabaseInitializationDependencyConfigurer$DependsOnDatabaseInitializationPostProcessor.detectDependsOnInitializationBeanNames(DatabaseInitializationDependencyConfigurer.java:152)
+	at org.springframework.boot.sql.init.dependency.DatabaseInitializationDependencyConfigurer$DependsOnDatabaseInitializationPostProcessor.postProcessBeanFactory(DatabaseInitializationDependencyConfigurer.java:115)
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:363)
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:197)
+	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:789)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:607)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:335)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1363)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1352)
+	at com.acme.im.business.BusinessServiceApplication.main(BusinessServiceApplication.java:17)
+2025-08-13 18:40:39.392 [main] INFO  com.acme.im.business.BusinessServiceApplication - Starting BusinessServiceApplication using Java 17.0.14 with PID 222 (/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/target/classes started by aguang in /Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices)
+2025-08-13 18:40:39.392 [main] DEBUG com.acme.im.business.BusinessServiceApplication - Running with Spring Boot v3.2.8, Spring v6.1.11
+2025-08-13 18:40:39.393 [main] INFO  com.acme.im.business.BusinessServiceApplication - The following 1 profile is active: "common"
+2025-08-13 18:40:39.639 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-08-13 18:40:39.640 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-08-13 18:40:39.646 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 2 ms. Found 0 Redis repository interfaces.
+2025-08-13 18:40:39.780 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-08-13 18:40:39.780 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-08-13 18:40:39.784 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 3 ms. Found 0 Redis repository interfaces.
+2025-08-13 18:40:40.167 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2025-08-13 18:40:40.171 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2025-08-13 18:40:40.171 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.26]
+2025-08-13 18:40:40.189 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-08-13 18:40:40.189 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 780 ms
+2025-08-13 18:40:40.294 [main] DEBUG c.a.im.common.security.jwt.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2025-08-13 18:40:40.299 [main] INFO  c.acme.im.business.config.BusinessDataSourceConfig - 业务服务启用读写分离：写操作使用主库，读操作使用从库
+2025-08-13 18:40:40.320 [main] INFO  c.a.i.c.i.database.config.DatabaseConfig - 配置主数据源: jdbc:mysql://localhost:3306/im_system?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowMultiQueries=true
+2025-08-13 18:40:40.321 [main] INFO  c.a.i.c.i.database.config.DatabaseConfig - 创建HikariCP配置: url=jdbc:mysql://localhost:3306/im_system?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowMultiQueries=true, username=root, poolName=IM-Primary-HikariCP
+2025-08-13 18:40:40.548 [main] ERROR i.n.resolver.dns.DnsServerAddressStreamProviders - Unable to load io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider, fallback to system defaults. This may result in incorrect DNS resolutions on MacOS. Check whether you have a dependency on 'io.netty:netty-resolver-dns-native-macos'. Use DEBUG level to see the full stack: java.lang.UnsatisfiedLinkError: failed to load the required native library
+2025-08-13 18:40:40.629 [main] INFO  c.a.i.c.i.nats.config.NatsConnectionPool - 初始化NATS连接池: minConnections=5, maxConnections=20
+2025-08-13 18:40:40.654 [main] INFO  c.a.i.c.i.nats.config.NatsConnectionPool - NATS连接池初始化完成: 创建连接数=5
+2025-08-13 18:40:40.655 [main] INFO  c.a.i.c.i.nats.publisher.AsyncEventPublisher - 初始化异步事件发布器...
+2025-08-13 18:40:40.656 [main] INFO  c.a.i.c.i.nats.publisher.AsyncEventPublisher - 异步事件发布器初始化完成: 线程池大小=4, 队列容量=10000
+2025-08-13 18:40:40.658 [main] INFO  c.a.i.common.infrastructure.nats.config.NatsConfig - 正在连接NATS服务器: nats://localhost:4222
+2025-08-13 18:40:40.660 [main] INFO  c.a.i.common.infrastructure.nats.config.NatsConfig - NATS连接成功: nats://localhost:4222
+2025-08-13 18:40:40.728 [main] INFO  com.acme.im.common.config.DynamicConfigManager - 初始化动态配置管理器...
+2025-08-13 18:40:40.728 [main] INFO  com.acme.im.common.config.DynamicConfigManager - 注册配置源: name=redis, priority=100
+2025-08-13 18:40:40.729 [main] INFO  com.acme.im.common.config.DynamicConfigManager - 注册配置源: name=system-properties, priority=50
+2025-08-13 18:40:40.729 [main] INFO  c.a.i.c.i.nats.subscriber.EventSubscriber - 事件订阅成功: subject=config.change, sid=config.change
+2025-08-13 18:40:40.729 [main] INFO  com.acme.im.common.config.DynamicConfigManager - 动态配置管理器初始化完成: 配置源数量=2
+2025-08-13 18:40:40.731 [main] INFO  com.acme.im.common.config.ConfigHotReload - 初始化配置热更新机制...
+2025-08-13 18:40:40.731 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 跳过Bean扫描: configHotReload
+2025-08-13 18:40:40.735 [main] DEBUG c.a.i.c.i.database.config.DataSourceRouter - 切换到数据源: primary
+2025-08-13 18:40:40.735 [main] INFO  c.a.i.c.i.database.config.DataSourceSelector - 业务服务初始化完成，默认使用主库数据源
+2025-08-13 18:40:40.735 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: databaseProperties -> com.acme.im.common.infrastructure.database.config.DatabaseProperties
+2025-08-13 18:40:40.737 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: redisProperties -> com.acme.im.common.infrastructure.redis.config.RedisProperties
+2025-08-13 18:40:40.741 [main] INFO  com.acme.im.common.plugin.PluginRegistry - 初始化插件注册中心...
+2025-08-13 18:40:40.742 [main] DEBUG com.acme.im.common.plugin.PluginRegistry - 添加事件监听器: eventType=PLUGIN_UNLOADED
+2025-08-13 18:40:40.742 [main] INFO  com.acme.im.common.plugin.PluginRegistry - 插件注册中心初始化完成
+2025-08-13 18:40:40.744 [main] INFO  com.acme.im.common.plugin.ExtensionPointManager - 初始化扩展点管理器...
+2025-08-13 18:40:40.744 [main] INFO  com.acme.im.common.plugin.ExtensionPointManager - 定义扩展点: ExtensionPointDefinition{name=message.process, interface=MessageProcessor, strategy=ALL, required=false}
+2025-08-13 18:40:40.744 [main] INFO  com.acme.im.common.plugin.ExtensionPointManager - 定义扩展点: ExtensionPointDefinition{name=user.authenticate, interface=UserAuthenticator, strategy=UNTIL_SUCCESS, required=true}
+2025-08-13 18:40:40.744 [main] INFO  com.acme.im.common.plugin.ExtensionPointManager - 定义扩展点: ExtensionPointDefinition{name=message.filter, interface=MessageFilter, strategy=ALL, required=false}
+2025-08-13 18:40:40.744 [main] INFO  com.acme.im.common.plugin.ExtensionPointManager - 注册系统内置扩展点完成
+2025-08-13 18:40:40.744 [main] INFO  com.acme.im.common.plugin.ExtensionPointManager - 扩展点管理器初始化完成: 扩展点数量=3
+2025-08-13 18:40:40.746 [main] INFO  com.acme.im.common.plugin.PluginManager - 初始化插件管理器...
+2025-08-13 18:40:40.747 [main] INFO  com.acme.im.common.plugin.PluginManager - 创建插件目录: /Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/plugins
+2025-08-13 18:40:40.747 [main] INFO  com.acme.im.common.plugin.PluginManager - 未发现插件JAR文件
+2025-08-13 18:40:40.747 [main] INFO  com.acme.im.common.plugin.PluginManager - 插件管理器初始化完成: 已加载插件数=0
+2025-08-13 18:40:40.760 [main] INFO  c.a.im.common.utils.cache.DistributedCacheManager - 初始化分布式缓存管理器...
+2025-08-13 18:40:40.760 [main] INFO  c.a.im.common.utils.cache.DistributedCacheManager - 分布式缓存管理器初始化完成: 本地缓存大小限制=10000
+2025-08-13 18:40:40.762 [main] INFO  com.acme.im.common.config.AsyncConfiguration - 创建缓存操作线程池
+2025-08-13 18:40:40.762 [main] INFO  com.acme.im.common.config.AsyncConfiguration - 缓存操作线程池创建完成: org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor$1@5b5d6f9c[Running, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0]
+2025-08-13 18:40:40.763 [main] INFO  com.acme.im.common.utils.cache.CacheWarmupService - 初始化缓存预热服务...
+2025-08-13 18:40:40.764 [main] INFO  c.a.i.c.i.nats.subscriber.EventSubscriber - 事件订阅成功: subject=cache.invalidation, sid=cache.invalidation
+2025-08-13 18:40:40.764 [main] INFO  com.acme.im.common.utils.cache.CacheWarmupService - 缓存预热服务初始化完成: 工作线程数=3
+2025-08-13 18:40:40.770 [main] INFO  com.acme.im.common.config.AsyncConfiguration - 创建默认异步线程池: corePoolSize=4, maxPoolSize=20, queueCapacity=1000
+2025-08-13 18:40:40.770 [main] INFO  com.acme.im.common.config.AsyncConfiguration - 默认异步线程池创建完成: org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor$1@4b9dd787[Running, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0]
+2025-08-13 18:40:40.772 [main] INFO  com.acme.im.common.config.AsyncConfiguration - 创建事件处理线程池: corePoolSize=2, maxPoolSize=8, queueCapacity=5000
+2025-08-13 18:40:40.772 [main] INFO  com.acme.im.common.config.AsyncConfiguration - 事件处理线程池创建完成: org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor$1@3cdc5155[Running, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0]
+2025-08-13 18:40:40.774 [main] INFO  com.acme.im.common.config.AsyncConfiguration - 创建消息处理线程池
+2025-08-13 18:40:40.774 [main] INFO  com.acme.im.common.config.AsyncConfiguration - 消息处理线程池创建完成: org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor$1@2ced7cf[Running, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0]
+2025-08-13 18:40:40.775 [main] INFO  com.acme.im.common.config.AsyncConfiguration - 创建文件处理线程池
+2025-08-13 18:40:40.775 [main] INFO  com.acme.im.common.config.AsyncConfiguration - 文件处理线程池创建完成: org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor$1@604e8a6[Running, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0]
+2025-08-13 18:40:40.777 [main] INFO  com.acme.im.common.config.AsyncConfiguration - 创建监控统计线程池
+2025-08-13 18:40:40.777 [main] INFO  com.acme.im.common.config.AsyncConfiguration - 监控统计线程池创建完成: org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor$1@2f408960[Running, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0]
+2025-08-13 18:40:40.780 [main] INFO  c.a.i.c.i.database.config.DatabaseConfig - 配置从数据源: jdbc:mysql://localhost:3306/im_system_copy?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowMultiQueries=true
+2025-08-13 18:40:40.780 [main] INFO  c.a.i.c.i.database.config.DatabaseConfig - 创建HikariCP配置: url=jdbc:mysql://localhost:3306/im_system_copy?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowMultiQueries=true, username=root, poolName=IM-Secondary-HikariCP
+2025-08-13 18:40:40.786 [main] INFO  c.a.i.c.i.database.config.DataSourceRouter - 数据源路由初始化完成: primary=HikariDataSource (IM-Primary-HikariCP), secondary=HikariDataSource (IM-Secondary-HikariCP)
+2025-08-13 18:40:40.886 [OkHttp http://localhost:9000/...] DEBUG c.a.i.c.infrastructure.minio.config.MinioConfig - MinIO请求: HEAD http://localhost:9000/im-files
+2025-08-13 18:40:40.896 [main] INFO  c.a.i.c.infrastructure.minio.config.MinioConfig - 存储桶连接正常: im-files
+2025-08-13 18:40:40.896 [main] INFO  c.a.i.c.infrastructure.minio.config.MinioConfig - MinIO客户端初始化成功: endpoint=http://localhost:9000, region=us-east-1
+2025-08-13 18:40:40.906 [main] INFO  c.a.i.common.infrastructure.nats.config.NatsConfig - JetStream初始化成功
+2025-08-13 18:40:40.906 [main] INFO  c.a.i.common.infrastructure.nats.config.NatsConfig - 开始初始化默认流...
+2025-08-13 18:40:40.906 [main] INFO  c.a.i.common.infrastructure.nats.config.NatsConfig - 默认流初始化完成（需要手动创建）
+2025-08-13 18:40:40.981 [main] INFO  org.redisson.Version - Redisson 3.24.3
+2025-08-13 18:40:41.026 [redisson-netty-4-4] INFO  o.r.connection.pool.MasterPubSubConnectionPool - 1 connections initialized for localhost/127.0.0.1:6379
+2025-08-13 18:40:41.452 [main] INFO  o.s.b.actuate.endpoint.web.EndpointLinksResolver - Exposing 9 endpoint(s) beneath base path '/actuator'
+2025-08-13 18:40:41.495 [main] INFO  o.s.security.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@20ac726c, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@75c2a35, org.springframework.security.web.context.SecurityContextHolderFilter@612e1c6e, org.springframework.security.web.header.HeaderWriterFilter@451f08ea, org.springframework.web.filter.CorsFilter@a9e31e8, com.acme.im.common.security.jwt.JwtAuthenticationFilter@27c2f134, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@38067d41, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@1d77762f, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@64bed8b2, org.springframework.security.web.session.SessionManagementFilter@796affb8, org.springframework.security.web.access.ExceptionTranslationFilter@4ba88ab5, org.springframework.security.web.access.intercept.AuthorizationFilter@d7d984c]
+2025-08-13 18:40:41.510 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: spring.ssl-org.springframework.boot.autoconfigure.ssl.SslProperties -> org.springframework.boot.autoconfigure.ssl.SslProperties
+2025-08-13 18:40:41.511 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: server-org.springframework.boot.autoconfigure.web.ServerProperties -> org.springframework.boot.autoconfigure.web.ServerProperties
+2025-08-13 18:40:41.511 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: spring.mvc-org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties -> org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties
+2025-08-13 18:40:41.512 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: spring.jackson-org.springframework.boot.autoconfigure.jackson.JacksonProperties -> org.springframework.boot.autoconfigure.jackson.JacksonProperties
+2025-08-13 18:40:41.518 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: spring.codec-org.springframework.boot.autoconfigure.codec.CodecProperties -> org.springframework.boot.autoconfigure.codec.CodecProperties
+2025-08-13 18:40:41.536 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: spring.task.execution-org.springframework.boot.autoconfigure.task.TaskExecutionProperties -> org.springframework.boot.autoconfigure.task.TaskExecutionProperties
+2025-08-13 18:40:41.541 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: spring.web-org.springframework.boot.autoconfigure.web.WebProperties -> org.springframework.boot.autoconfigure.web.WebProperties
+2025-08-13 18:40:41.619 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: spring.datasource-org.springframework.boot.autoconfigure.jdbc.DataSourceProperties -> org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
+2025-08-13 18:40:41.619 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: mybatis-plus-com.baomidou.mybatisplus.autoconfigure.MybatisPlusProperties -> com.baomidou.mybatisplus.autoconfigure.MybatisPlusProperties
+2025-08-13 18:40:41.631 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: resilience4j.bulkhead-io.github.resilience4j.springboot3.bulkhead.autoconfigure.BulkheadProperties -> io.github.resilience4j.springboot3.bulkhead.autoconfigure.BulkheadProperties
+2025-08-13 18:40:41.631 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: resilience4j.thread-pool-bulkhead-io.github.resilience4j.springboot3.bulkhead.autoconfigure.ThreadPoolBulkheadProperties -> io.github.resilience4j.springboot3.bulkhead.autoconfigure.ThreadPoolBulkheadProperties
+2025-08-13 18:40:41.632 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: management.metrics-org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties -> org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties
+2025-08-13 18:40:41.632 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: management.prometheus.metrics.export-org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusProperties -> org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusProperties
+2025-08-13 18:40:41.633 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: resilience4j.circuitbreaker-io.github.resilience4j.springboot3.circuitbreaker.autoconfigure.CircuitBreakerProperties -> io.github.resilience4j.springboot3.circuitbreaker.autoconfigure.CircuitBreakerProperties
+2025-08-13 18:40:41.635 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: resilience4j.ratelimiter-io.github.resilience4j.springboot3.ratelimiter.autoconfigure.RateLimiterProperties -> io.github.resilience4j.springboot3.ratelimiter.autoconfigure.RateLimiterProperties
+2025-08-13 18:40:41.637 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: resilience4j.retry-io.github.resilience4j.springboot3.retry.autoconfigure.RetryProperties -> io.github.resilience4j.springboot3.retry.autoconfigure.RetryProperties
+2025-08-13 18:40:41.638 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: resilience4j.timelimiter-io.github.resilience4j.springboot3.timelimiter.autoconfigure.TimeLimiterProperties -> io.github.resilience4j.springboot3.timelimiter.autoconfigure.TimeLimiterProperties
+2025-08-13 18:40:41.665 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: spring.redis.redisson-org.redisson.spring.starter.RedissonProperties -> org.redisson.spring.starter.RedissonProperties
+2025-08-13 18:40:41.665 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: spring.data.redis-org.springframework.boot.autoconfigure.data.redis.RedisProperties -> org.springframework.boot.autoconfigure.data.redis.RedisProperties
+2025-08-13 18:40:41.685 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: spring.transaction-org.springframework.boot.autoconfigure.transaction.TransactionProperties -> org.springframework.boot.autoconfigure.transaction.TransactionProperties
+2025-08-13 18:40:41.690 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: management.endpoint.health-org.springframework.boot.actuate.autoconfigure.health.HealthEndpointProperties -> org.springframework.boot.actuate.autoconfigure.health.HealthEndpointProperties
+2025-08-13 18:40:41.692 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: spring.info-org.springframework.boot.autoconfigure.info.ProjectInfoProperties -> org.springframework.boot.autoconfigure.info.ProjectInfoProperties
+2025-08-13 18:40:41.694 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: management.info-org.springframework.boot.actuate.autoconfigure.info.InfoContributorProperties -> org.springframework.boot.actuate.autoconfigure.info.InfoContributorProperties
+2025-08-13 18:40:41.697 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: management.endpoint.configprops-org.springframework.boot.actuate.autoconfigure.context.properties.ConfigurationPropertiesReportEndpointProperties -> org.springframework.boot.actuate.autoconfigure.context.properties.ConfigurationPropertiesReportEndpointProperties
+2025-08-13 18:40:41.715 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: spring.jmx-org.springframework.boot.autoconfigure.jmx.JmxProperties -> org.springframework.boot.autoconfigure.jmx.JmxProperties
+2025-08-13 18:40:41.736 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: management.endpoints.jmx-org.springframework.boot.actuate.autoconfigure.endpoint.jmx.JmxEndpointProperties -> org.springframework.boot.actuate.autoconfigure.endpoint.jmx.JmxEndpointProperties
+2025-08-13 18:40:41.737 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: management.endpoints.web-org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties -> org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties
+2025-08-13 18:40:41.737 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: management.endpoint.env-org.springframework.boot.actuate.autoconfigure.env.EnvironmentEndpointProperties -> org.springframework.boot.actuate.autoconfigure.env.EnvironmentEndpointProperties
+2025-08-13 18:40:41.737 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: management.health.diskspace-org.springframework.boot.actuate.autoconfigure.system.DiskSpaceHealthIndicatorProperties -> org.springframework.boot.actuate.autoconfigure.system.DiskSpaceHealthIndicatorProperties
+2025-08-13 18:40:41.737 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: management.health.db-org.springframework.boot.actuate.autoconfigure.jdbc.DataSourceHealthIndicatorProperties -> org.springframework.boot.actuate.autoconfigure.jdbc.DataSourceHealthIndicatorProperties
+2025-08-13 18:40:41.737 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: management.endpoint.logfile-org.springframework.boot.actuate.autoconfigure.logging.LogFileWebEndpointProperties -> org.springframework.boot.actuate.autoconfigure.logging.LogFileWebEndpointProperties
+2025-08-13 18:40:41.769 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: spring.task.scheduling-org.springframework.boot.autoconfigure.task.TaskSchedulingProperties -> org.springframework.boot.autoconfigure.task.TaskSchedulingProperties
+2025-08-13 18:40:41.776 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: management.observations-org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties -> org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties
+2025-08-13 18:40:41.782 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: spring.gson-org.springframework.boot.autoconfigure.gson.GsonProperties -> org.springframework.boot.autoconfigure.gson.GsonProperties
+2025-08-13 18:40:41.802 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: spring.reactor.netty-org.springframework.boot.autoconfigure.reactor.netty.ReactorNettyProperties -> org.springframework.boot.autoconfigure.reactor.netty.ReactorNettyProperties
+2025-08-13 18:40:41.830 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: spring.lifecycle-org.springframework.boot.autoconfigure.context.LifecycleProperties -> org.springframework.boot.autoconfigure.context.LifecycleProperties
+2025-08-13 18:40:41.836 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: spring.data.web-org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties -> org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties
+2025-08-13 18:40:41.853 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: spring.jdbc-org.springframework.boot.autoconfigure.jdbc.JdbcProperties -> org.springframework.boot.autoconfigure.jdbc.JdbcProperties
+2025-08-13 18:40:41.857 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: spring.netty-org.springframework.boot.autoconfigure.netty.NettyProperties -> org.springframework.boot.autoconfigure.netty.NettyProperties
+2025-08-13 18:40:41.858 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: spring.reactor-org.springframework.boot.autoconfigure.reactor.ReactorProperties -> org.springframework.boot.autoconfigure.reactor.ReactorProperties
+2025-08-13 18:40:41.859 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: spring.security-org.springframework.boot.autoconfigure.security.SecurityProperties -> org.springframework.boot.autoconfigure.security.SecurityProperties
+2025-08-13 18:40:41.860 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: spring.sql.init-org.springframework.boot.autoconfigure.sql.init.SqlInitializationProperties -> org.springframework.boot.autoconfigure.sql.init.SqlInitializationProperties
+2025-08-13 18:40:41.868 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: spring.servlet.multipart-org.springframework.boot.autoconfigure.web.servlet.MultipartProperties -> org.springframework.boot.autoconfigure.web.servlet.MultipartProperties
+2025-08-13 18:40:41.868 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: management.endpoints.web.cors-org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties -> org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties
+2025-08-13 18:40:41.873 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 发现配置属性Bean: management.server-org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties -> org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties
+2025-08-13 18:40:41.873 [main] DEBUG com.acme.im.common.config.ConfigHotReload - 创建动态属性源: dynamicConfigProperties
+2025-08-13 18:40:41.873 [main] DEBUG com.acme.im.common.config.DynamicConfigManager - 添加配置监听器: key=*
+2025-08-13 18:40:41.873 [main] INFO  com.acme.im.common.config.ConfigHotReload - 配置热更新机制初始化完成: 配置Bean数量=47
+2025-08-13 18:40:41.891 [main] DEBUG c.a.i.c.i.database.config.DataSourceRouter - 当前使用数据源: primary
+2025-08-13 18:40:41.891 [main] DEBUG c.a.i.c.i.database.config.DataSourceRouter - 当前使用数据源: primary
+2025-08-13 18:40:41.893 [main] DEBUG c.a.i.c.i.database.config.DataSourceRouter - 当前使用数据源: primary
+2025-08-13 18:40:41.893 [main] DEBUG c.a.i.c.i.database.config.DataSourceRouter - 当前使用数据源: primary
+2025-08-13 18:40:41.921 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path ''
+2025-08-13 18:40:41.929 [main] INFO  com.acme.im.business.BusinessServiceApplication - Started BusinessServiceApplication in 2.684 seconds (process running for 2.899)
+2025-08-13 18:40:41.932 [cache-1] INFO  com.acme.im.common.utils.cache.CacheWarmupService - 应用启动完成，开始执行系统级缓存预热...
+2025-08-13 18:40:42.146 [RMI TCP Connection(4)-172.16.1.231] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-08-13 18:40:42.146 [RMI TCP Connection(4)-172.16.1.231] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-08-13 18:40:42.147 [RMI TCP Connection(4)-172.16.1.231] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2025-08-13 18:40:46.938 [cache-1] INFO  com.acme.im.common.utils.cache.CacheWarmupService - 开始系统级缓存预热...
+2025-08-13 18:40:46.939 [cache-1] DEBUG com.acme.im.common.utils.cache.CacheWarmupService - 添加预热任务: key=system:config, priority=CRITICAL
+2025-08-13 18:40:46.940 [cache-1] INFO  com.acme.im.common.utils.cache.CacheWarmupService - 系统级缓存预热任务已添加
+2025-08-13 18:41:10.658 [async-event-scheduler-2] INFO  c.a.i.c.i.nats.publisher.AsyncEventPublisher - 异步发布器统计: PublishStats{total=0, success=0, failed=0, retried=0, dropped=0, queue=0, successRate=0.00%}
+2025-08-13 18:41:10.733 [config-refresh] DEBUG com.acme.im.common.config.DynamicConfigManager - 开始刷新配置缓存...
+2025-08-13 18:41:10.733 [config-refresh] DEBUG com.acme.im.common.config.DynamicConfigManager - 配置缓存刷新完成: 缓存大小=0

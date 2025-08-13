@@ -1,0 +1,17 @@
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/src/main/java/com/acme/im/business/entity/UserDevice.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/src/main/java/com/acme/im/business/dto/UserRegisterRequest.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/src/main/java/com/acme/im/business/entity/Friendship.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/src/main/java/com/acme/im/business/entity/UserBlacklist.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/src/main/java/com/acme/im/business/dto/UserLoginRequest.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/src/main/java/com/acme/im/business/entity/UserPrivacySettings.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/src/main/java/com/acme/im/business/controller/UserController.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/src/main/java/com/acme/im/business/BusinessServiceApplication.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/src/main/java/com/acme/im/business/dto/UserDTO.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/src/main/java/com/acme/im/business/config/BusinessDataSourceConfig.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/src/main/java/com/acme/im/business/entity/FriendRequest.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/src/main/java/com/acme/im/business/service/FriendService.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/src/main/java/com/acme/im/business/entity/User.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/src/main/java/com/acme/im/business/service/impl/UserServiceImpl.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/src/main/java/com/acme/im/business/entity/Conversation.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/src/main/java/com/acme/im/business/service/UserService.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/business-service/src/main/java/com/acme/im/business/repository/UserRepository.java

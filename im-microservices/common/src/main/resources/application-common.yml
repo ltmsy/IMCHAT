@@ -1,0 +1,316 @@
+# IM系统公共配置
+# 所有微服务都会继承此配置，避免重复配置
+
+spring:
+  # 数据库配置
+  datasource:
+    # 主库配置 - 业务层写操作使用
+    primary:
+      url: jdbc:mysql://localhost:3306/im_system?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowMultiQueries=true
+      username: root
+      password: "123456"
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      hikari:
+        maximum-pool-size: 20
+        minimum-idle: 5
+        connection-timeout: 30s
+        idle-timeout: 10m
+        max-lifetime: 30m
+        pool-name: "IM-Primary-HikariCP"
+        connection-test-query: "SELECT 1"
+        connection-init-sql: "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci"
+    
+    # 从库配置 - 通信层查询消息使用，业务层读操作使用
+    secondary:
+      url: jdbc:mysql://localhost:3306/im_system_copy?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowMultiQueries=true
+      username: root
+      password: "123456"
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      hikari:
+        maximum-pool-size: 25
+        minimum-idle: 8
+        connection-timeout: 30s
+        idle-timeout: 10m
+        max-lifetime: 30m
+        pool-name: "IM-Secondary-HikariCP"
+        connection-test-query: "SELECT 1"
+        connection-init-sql: "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci"
+
+  # Redis配置 - 性能优化版本
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: redis_password
+      database: 0
+      timeout: 5000ms              # 连接超时时间
+      connect-timeout: 3000ms      # 连接建立超时时间
+      
+      # Lettuce连接池配置 - 高性能优化
+      lettuce:
+        pool:
+          # 连接池基础配置
+          max-active: 50             # 连接池最大连接数(高并发场景)
+          max-idle: 20               # 连接池最大空闲连接数
+          min-idle: 5                # 连接池最小空闲连接数
+          max-wait: 10000ms          # 连接池最大阻塞等待时间
+          
+          # 连接验证配置
+          test-on-borrow: true       # 获取连接时验证
+          test-on-return: false      # 归还连接时不验证(性能考虑)
+          test-while-idle: true      # 空闲时验证连接
+          
+          # 连接回收配置
+          time-between-eviction-runs: 30000ms    # 空闲连接检查间隔(30秒)
+          min-evictable-idle-time: 300000ms      # 连接空闲多久后可被回收(5分钟)
+          num-tests-per-eviction-run: 3          # 每次检查的连接数
+          
+          # 性能优化配置
+          block-when-exhausted: true             # 连接耗尽时阻塞等待
+          jmx-enabled: true                      # 启用JMX监控
+          
+        # Lettuce客户端配置
+        shutdown-timeout: 10000ms    # 关闭超时时间
+        
+        # 集群配置(如果使用Redis集群)
+        cluster:
+          refresh:
+            adaptive: true           # 自适应集群拓扑刷新
+            period: 30s              # 定期刷新间隔
+          
+        # 连接配置
+        client-options:
+          # 自动重连配置
+          auto-reconnect: true       # 自动重连
+          cancel-commands-on-reconnect-failure: false  # 重连失败时不取消命令
+          
+          # 连接超时配置
+          connect-timeout: 3000ms    # 连接超时
+          command-timeout: 5000ms    # 命令超时
+          
+          # 缓冲区配置
+          buffer-usage-ratio: 32.0   # 缓冲区使用率阈值
+          
+          # SSL配置(生产环境建议启用)
+          ssl:
+            verify-peer: false       # 开发环境关闭SSL验证
+            
+      # Redis序列化配置
+      serialization:
+        default-serializer: json     # 默认JSON序列化
+        key-serializer: string       # Key使用字符串序列化
+        value-serializer: json       # Value使用JSON序列化
+        hash-key-serializer: string  # Hash Key使用字符串序列化
+        hash-value-serializer: json  # Hash Value使用JSON序列化
+
+  # NATS配置
+  nats:
+    # 基础连接配置
+    servers: nats://localhost:4222
+    connection-name: "IM-Common-Service"
+    connection-timeout: 10s
+    ping-interval: 30s
+    reconnect-wait: 2s
+    max-reconnect: 10
+    
+    # 连接池配置
+    pool:
+      enabled: true
+      min-connections: 5
+      max-connections: 20
+      max-idle-time: 300s          # 5分钟空闲超时
+      connection-timeout: 10s      # 连接超时
+      cleanup-interval: 60s        # 清理间隔
+    
+    # JetStream配置
+    jetstream:
+      enabled: true
+      domain: "IM"
+      publish-timeout: 5s
+      request-timeout: 10s
+      
+      # 流配置
+      streams:
+        # 消息流
+        messages:
+          subjects: ["messages.*"]
+          retention: limits
+          max-age: 7d              # 消息保留7天
+          max-msgs: 1000000        # 最大消息数
+          max-bytes: 1GB           # 最大存储大小
+          storage: file            # 文件存储
+          replicas: 1              # 副本数
+          
+        # 事件流
+        events:
+          subjects: ["events.*", "cache.*"]
+          retention: limits
+          max-age: 1d              # 事件保留1天
+          max-msgs: 100000         # 最大消息数
+          max-bytes: 100MB         # 最大存储大小
+          storage: memory          # 内存存储(更快)
+          replicas: 1
+
+  # MinIO配置
+  minio:
+    endpoint: http://localhost:9000
+    access-key: minioadmin
+    secret-key: minioadmin
+    bucket-name: im-files
+    region: us-east-1
+    
+    # 连接池配置
+    connection-pool:
+      max-connections: 50          # 最大连接数
+      connection-timeout: 10000    # 连接超时(毫秒)
+      socket-timeout: 30000        # Socket超时(毫秒)
+      max-error-retry: 3           # 最大重试次数
+
+# JWT配置
+jwt:
+  secret: "IM_JWT_SECRET_KEY_FOR_DEVELOPMENT_ONLY_CHANGE_IN_PRODUCTION"
+  expiration: 86400 # 24小时，单位秒
+  refresh-expiration: 604800 # 7天，单位秒
+  issuer: "IM-System"
+  
+  # 性能优化配置
+  cache:
+    enabled: true                  # 启用JWT缓存
+    max-size: 10000               # 最大缓存数量
+    expire-after-write: 30m       # 写入后30分钟过期
+    expire-after-access: 15m      # 访问后15分钟过期
+
+# 日志配置
+logging:
+  level:
+    root: INFO
+    com.acme.im: DEBUG
+    org.springframework.data.redis: WARN    # Redis日志级别
+    io.lettuce.core: WARN                   # Lettuce日志级别
+    io.nats: WARN                           # NATS日志级别
+    com.zaxxer.hikari: WARN                 # HikariCP日志级别
+    
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+    
+  file:
+    name: logs/im-common.log
+    max-size: 100MB
+    max-history: 30
+    total-size-cap: 3GB
+
+# 监控配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,env,configprops,beans,threaddump,heapdump
+      base-path: /actuator
+      cors:
+        allowed-origins: "*"
+        allowed-methods: GET,POST
+        
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+      
+    metrics:
+      enabled: true
+      
+    prometheus:
+      enabled: true
+      
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+        step: 30s                 # 30秒采集间隔
+        descriptions: true
+        
+    # 自定义指标配置
+    tags:
+      application: ${spring.application.name:unknown}
+      environment: ${spring.profiles.active:default}
+      
+    # JVM指标
+    jvm:
+      enabled: true
+      
+    # 系统指标
+    system:
+      enabled: true
+      
+    # 连接池指标
+    jdbc:
+      enabled: true
+      
+    # Redis指标
+    redis:
+      enabled: true
+      
+  # 健康检查配置
+  health:
+    # Redis健康检查
+    redis:
+      enabled: true
+      timeout: 5s
+      
+    # 数据库健康检查
+    db:
+      enabled: true
+      
+    # 磁盘空间检查
+    diskspace:
+      enabled: true
+      threshold: 100MB
+      
+    # NATS健康检查
+    nats:
+      enabled: true
+      timeout: 5s
+
+# 性能调优配置
+performance:
+  # 缓存配置
+  cache:
+    # 本地缓存配置
+    local:
+      max-size: 10000             # 最大缓存条目数
+      expire-after-write: 5m      # 写入后过期时间
+      expire-after-access: 2m     # 访问后过期时间
+      refresh-after-write: 3m     # 写入后刷新时间
+      
+    # Redis缓存配置
+    redis:
+      default-ttl: 1h             # 默认TTL
+      max-ttl: 24h                # 最大TTL
+      null-value-ttl: 5m          # 空值TTL(防穿透)
+      
+  # 异步处理配置
+  async:
+    # 核心线程池配置
+    core-pool-size: 4
+    max-pool-size: 20
+    queue-capacity: 1000
+    thread-name-prefix: "async-"
+    keep-alive-seconds: 60
+    
+    # 事件发布线程池配置
+    event:
+      core-pool-size: 2
+      max-pool-size: 8
+      queue-capacity: 5000
+      thread-name-prefix: "event-"
+      
+  # 连接池监控配置
+  monitoring:
+    # 连接池统计间隔
+    pool-stats-interval: 60s
+    
+    # 慢查询阈值
+    slow-query-threshold: 1s
+    
+    # 连接泄露检测
+    connection-leak-detection: true 

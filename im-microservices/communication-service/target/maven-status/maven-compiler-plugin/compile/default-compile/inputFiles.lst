@@ -1,0 +1,15 @@
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/communication-service/src/main/java/com/acme/im/communication/service/MessageIdempotencyService.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/communication-service/src/main/java/com/acme/im/communication/entity/Message.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/communication-service/src/main/java/com/acme/im/communication/repository/CustomMessageRepository.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/communication-service/src/main/java/com/acme/im/communication/CommunicationServiceApplication.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/communication-service/src/main/java/com/acme/im/communication/repository/MessageRepository.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/communication-service/src/main/java/com/acme/im/communication/config/MessageShardingStrategy.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/communication-service/src/main/java/com/acme/im/communication/event/MessageEventPublisher.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/communication-service/src/main/java/com/acme/im/communication/config/WebSocketConfig.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/communication-service/src/main/java/com/acme/im/communication/realtime/WebSocketConnectionManager.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/communication-service/src/main/java/com/acme/im/communication/realtime/WebSocketMessageHandler.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/communication-service/src/main/java/com/acme/im/communication/service/MessageShardingExample.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/communication-service/src/main/java/com/acme/im/communication/service/MessageService.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/communication-service/src/main/java/com/acme/im/communication/service/MessageSequenceService.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/communication-service/src/main/java/com/acme/im/communication/realtime/ImWebSocketHandler.java
+/Users/aguang/Documents/IM2.0VESION/IMCHAT/im-microservices/communication-service/src/main/java/com/acme/im/communication/service/ReadOnlyMessageQueryService.java

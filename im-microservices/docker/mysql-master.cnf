@@ -1,0 +1,60 @@
+[mysqld]
+# 基本配置
+port = 3306
+bind-address = 0.0.0.0
+max_connections = 1000
+max_connect_errors = 100000
+
+# 字符集配置
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
+init_connect = 'SET NAMES utf8mb4'
+
+# 二进制日志配置
+log-bin = mysql-bin
+binlog-format = ROW
+sync-binlog = 1
+expire-logs-days = 7
+max-binlog-size = 100M
+
+# InnoDB配置
+innodb_buffer_pool_size = 256M
+innodb_log_file_size = 64M
+innodb_log_buffer_size = 16M
+innodb_flush_log_at_trx_commit = 1
+innodb_lock_wait_timeout = 50
+innodb_rollback_on_timeout = 1
+
+# 主从复制配置
+server-id = 1
+log-slave-updates = 1
+binlog-do-db = im_system
+binlog-ignore-db = mysql,information_schema,performance_schema,sys
+
+# 性能优化
+query_cache_type = 1
+query_cache_size = 32M
+query_cache_limit = 2M
+tmp_table_size = 64M
+max_heap_table_size = 64M
+sort_buffer_size = 2M
+read_buffer_size = 2M
+read_rnd_buffer_size = 8M
+join_buffer_size = 2M
+
+# 慢查询日志
+slow_query_log = 1
+slow_query_log_file = /var/log/mysql/slow.log
+long_query_time = 2
+log_queries_not_using_indexes = 1
+
+# 错误日志
+log-error = /var/log/mysql/error.log
+log-warnings = 2
+
+# 时区配置
+default-time-zone = '+08:00'
+
+# 安全配置
+local_infile = 0
+sql_mode = STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO 

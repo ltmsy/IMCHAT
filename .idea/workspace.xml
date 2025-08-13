@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="f4d7cc5f-776c-4cb0-82f8-fc67b59fe429" name="Changes" comment="初始化">
+      <change beforePath="$PROJECT_DIR$/功能设计文档/IM 系统数据模型：MySQL 建表 SQL 与 MongoDB 建库脚本（可执行）.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/功能设计文档/IM（PC网页_桌面端）三栏式紫色主题交互设计说明 v2（对齐系统架构）.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/功能设计文档/IM（PC网页与桌面端）功能清单.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/开发设计文档/01-总体架构设计文档.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/开发设计文档/02-核心服务文档.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/开发设计文档/03-业务服务文档.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/开发设计文档/04-基础设施文档.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/开发设计文档/05-运维部署文档.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/开发设计文档/IM 系统架构与模块设计规范— 完整版.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/数据库/im_business.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/数据库/im_business_optimized.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/数据库/mongo-im-optimized.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/数据库/mongo-im.js" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerSettings">
+    <execution />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 3
+}]]></component>
+  <component name="ProjectId" id="31Av4sZZUhkvGgmZfk1C4m05FoV" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.go.formatter.settings.were.checked": "true",
+    "RunOnceActivity.go.migrated.go.modules.settings": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
+    "go.import.settings.migrated": "true",
+    "last_opened_file_path": "/Users/aguang/Documents/IM2.0VESION/IMCHAT",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "advanced.settings",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.25410.129" />
+        <option value="bundled-js-predefined-d6986cc7102b-6a121458b545-JavaScript-IU-251.25410.129" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="f4d7cc5f-776c-4cb0-82f8-fc67b59fe429" name="Changes" comment="" />
+      <created>1754979503995</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1754979503995</updated>
+      <workItem from="1754979505043" duration="7504000" />
+    </task>
+    <task id="LOCAL-00001" summary="初始化">
+      <option name="closed" value="true" />
+      <created>1754979572211</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1754979572211</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="初始化" />
+    <option name="LAST_COMMIT_MESSAGE" value="初始化" />
+  </component>
+  <component name="VgoProject">
+    <settings-migrated>true</settings-migrated>
+  </component>
+</project>

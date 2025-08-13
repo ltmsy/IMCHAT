@@ -1,0 +1,45 @@
+server:
+  port: 8083
+  servlet:
+    context-path: /admin
+
+spring:
+  application:
+    name: admin-service
+  
+  # 引用公共配置，只需要指定profile
+  profiles:
+    include: common
+  
+  # 服务特有的JPA配置（如果需要覆盖公共配置）
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+
+# 管理后台特有配置
+admin:
+  security:
+    admin-username: admin
+    admin-password: admin123
+    # 使用公共JWT配置，移除重复定义
+  
+  monitoring:
+    enabled: true
+    metrics-endpoint: /actuator/metrics
+    health-endpoint: /actuator/health
+  
+  audit:
+    enabled: true
+    retention-days: 1095 # 3年
+
+# 应用配置
+app:
+  system:
+    name: IM Admin System
+    version: 1.0.0
+    description: IM系统管理后台 
