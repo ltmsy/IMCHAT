@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IM系统测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            width: auto;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .btn-success { background-color: #28a745; }
+        .btn-danger { background-color: #dc3545; }
+        .btn-warning { background-color: #ffc107; color: #212529; }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .connected { background-color: #d4edda; color: #155724; }
+        .disconnected { background-color: #f8d7da; color: #721c24; }
+        .log-container {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+        .info { color: #007bff; }
+        .success { color: #28a745; }
+        .warning { color: #ffc107; }
+        .error { color: #dc3545; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .metric {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+        }
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .metric-label {
+            color: #6c757d;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 IM系统测试页面</h1>
+    <p>WebSocket连接测试 · 用户模块功能测试 · 事件处理验证</p>
+
+    <!-- WebSocket连接测试 -->
+    <div class="container">
+        <h2>🔌 WebSocket连接测试</h2>
+        <div class="form-group">
+            <label for="wsUrl">WebSocket URL:</label>
+            <input type="text" id="wsUrl" value="ws://localhost:8081/ws" placeholder="WebSocket连接地址">
+        </div>
+        <div class="form-group">
+            <label for="deviceId">设备ID:</label>
+            <input type="text" id="deviceId" value="test-device-001" placeholder="设备标识">
+        </div>
+        <div class="form-group">
+            <label for="authToken">认证Token:</label>
+            <input type="text" id="authToken" placeholder="JWT认证令牌">
+        </div>
+        
+        <button onclick="connectWebSocket()">连接WebSocket</button>
+        <button onclick="disconnectWebSocket()" class="btn-danger">断开连接</button>
+        <button onclick="sendAuthMessage()" class="btn-warning">发送认证消息</button>
+        
+        <div id="wsStatus" class="status disconnected">
+            WebSocket状态: 未连接
+        </div>
+    </div>
+
+    <!-- 用户模块功能测试 -->
+    <div class="container">
+        <h2>👤 用户模块功能测试</h2>
+        <div class="grid">
+            <div>
+                <h3>用户注册</h3>
+                <div class="form-group">
+                    <label for="regUsername">用户名:</label>
+                    <input type="text" id="regUsername" value="testuser" placeholder="用户名">
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">密码:</label>
+                    <input type="password" id="regPassword" value="testpass123" placeholder="密码">
+                </div>
+                <div class="form-group">
+                    <label for="regDeviceId">设备ID:</label>
+                    <input type="text" id="regDeviceId" value="test-device-001" placeholder="设备标识">
+                </div>
+                <button onclick="registerUser()" class="btn-success">注册用户</button>
+            </div>
+
+            <div>
+                <h3>用户登录</h3>
+                <div class="form-group">
+                    <label for="loginUsername">用户名:</label>
+                    <input type="text" id="loginUsername" value="testuser" placeholder="用户名">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">密码:</label>
+                    <input type="password" id="loginPassword" value="testpass123" placeholder="密码">
+                </div>
+                <div class="form-group">
+                    <label for="loginDeviceId">设备ID:</label>
+                    <input type="text" id="loginDeviceId" value="test-device-001" placeholder="设备标识">
+                </div>
+                <button onclick="loginUser()" class="btn-success">用户登录</button>
+                <button onclick="logoutUser()" class="btn-danger">用户登出</button>
+            </div>
+
+            <div>
+                <h3>用户资料管理</h3>
+                <div class="form-group">
+                    <label for="profileNickname">昵称:</label>
+                    <input type="text" id="profileNickname" value="测试用户" placeholder="昵称">
+                </div>
+                <div class="form-group">
+                    <label for="profileEmail">邮箱:</label>
+                    <input type="email" id="profileEmail" value="test@example.com" placeholder="邮箱">
+                </div>
+                <button onclick="updateProfile()" class="btn-success">更新资料</button>
+                <button onclick="getProfile()" class="btn-warning">获取资料</button>
+            </div>
+
+            <div>
+                <h3>设备管理</h3>
+                <div class="form-group">
+                    <label for="deviceName">设备名称:</label>
+                    <input type="text" id="deviceName" value="测试设备" placeholder="设备名称">
+                </div>
+                <div class="form-group">
+                    <label for="deviceType">设备类型:</label>
+                    <select id="deviceType">
+                        <option value="MOBILE">手机</option>
+                        <option value="DESKTOP">桌面</option>
+                        <option value="TABLET">平板</option>
+                        <option value="WEB">网页</option>
+                    </select>
+                </div>
+                <button onclick="registerDevice()" class="btn-success">注册设备</button>
+                <button onclick="getUserDevices()" class="btn-warning">获取设备列表</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 事件处理测试 -->
+    <div class="container">
+        <h2>📡 事件处理测试</h2>
+        <div class="grid">
+            <div>
+                <h3>WebSocket消息测试</h3>
+                <div class="form-group">
+                    <label for="messageType">消息类型:</label>
+                    <select id="messageType">
+                        <option value="CHAT">聊天消息</option>
+                        <option value="CONTROL">控制消息</option>
+                        <option value="HEARTBEAT">心跳消息</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="messageContent">消息内容:</label>
+                    <input type="text" id="messageContent" value="这是一条测试消息" placeholder="消息内容">
+                </div>
+                <button onclick="sendWebSocketMessage()" class="btn-success">发送消息</button>
+                <button onclick="testHeartbeat()" class="btn-warning">测试心跳</button>
+            </div>
+
+            <div>
+                <h3>事件监听测试</h3>
+                <button onclick="startEventMonitoring()" class="btn-success">开始事件监听</button>
+                <button onclick="stopEventMonitoring()" class="btn-danger">停止事件监听</button>
+                <button onclick="clearEventLogs()" class="btn-warning">清空事件日志</button>
+                
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-value" id="eventCount">0</div>
+                        <div class="metric-label">事件总数</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="wsMessageCount">0</div>
+                        <div class="metric-label">WebSocket消息</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 系统状态监控 -->
+    <div class="container">
+        <h2>📊 系统状态监控</h2>
+        <div class="grid">
+            <div>
+                <h3>连接状态</h3>
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-value" id="wsConnectionStatus">❌</div>
+                        <div class="metric-label">WebSocket</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="userAuthStatus">❌</div>
+                        <div class="metric-label">用户认证</div>
+                    </div>
+                </div>
+                <button onclick="refreshStatus()" class="btn-warning">刷新状态</button>
+            </div>
+
+            <div>
+                <h3>性能指标</h3>
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-value" id="responseTime">0ms</div>
+                        <div class="metric-label">响应时间</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="messageLatency">0ms</div>
+                        <div class="metric-label">消息延迟</div>
+                    </div>
+                </div>
+                <button onclick="startPerformanceTest()" class="btn-warning">开始性能测试</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 日志显示 -->
+    <div class="container">
+        <h2>📝 实时日志</h2>
+        <div class="log-container" id="logContainer">
+            <div class="log-entry info">系统启动，等待连接...</div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let websocket = null;
+        let isConnected = false;
+        let isAuthenticated = false;
+        let eventCount = 0;
+        let wsMessageCount = 0;
+        let eventMonitoring = false;
+        let performanceTestInterval = null;
+
+        // 业务服务API地址
+        const BUSINESS_SERVICE_URL = 'http://localhost:8080';
+
+        // 工具函数
+        function log(message, type = 'info') {
+            const logContainer = document.getElementById('logContainer');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function updateStatus() {
+            const wsStatus = document.getElementById('wsStatus');
+            const wsConnectionStatus = document.getElementById('wsConnectionStatus');
+            const userAuthStatus = document.getElementById('userAuthStatus');
+            
+            if (isConnected) {
+                wsStatus.className = 'status connected';
+                wsStatus.textContent = 'WebSocket状态: 已连接';
+                wsConnectionStatus.textContent = '✅';
+            } else {
+                wsStatus.className = 'status disconnected';
+                wsStatus.textContent = 'WebSocket状态: 未连接';
+                wsConnectionStatus.textContent = '❌';
+            }
+            
+            if (isAuthenticated) {
+                userAuthStatus.textContent = '✅';
+            } else {
+                userAuthStatus.textContent = '❌';
+            }
+        }
+
+        // WebSocket连接管理
+        function connectWebSocket() {
+            const wsUrl = document.getElementById('wsUrl').value;
+            const deviceId = document.getElementById('deviceId').value;
+            
+            if (!wsUrl || !deviceId) {
+                alert('请填写WebSocket URL和设备ID');
+                return;
+            }
+
+            try {
+                websocket = new WebSocket(wsUrl);
+                
+                websocket.onopen = function(event) {
+                    isConnected = true;
+                    log('WebSocket连接已建立', 'success');
+                    alert('WebSocket连接成功');
+                    updateStatus();
+                };
+                
+                websocket.onmessage = function(event) {
+                    handleWebSocketMessage(event.data);
+                };
+                
+                websocket.onclose = function(event) {
+                    isConnected = false;
+                    isAuthenticated = false;
+                    log('WebSocket连接已关闭', 'warning');
+                    alert('WebSocket连接已断开');
+                    updateStatus();
+                };
+                
+                websocket.onerror = function(error) {
+                    log('WebSocket连接错误: ' + error, 'error');
+                    alert('WebSocket连接错误');
+                };
+                
+            } catch (error) {
+                log('创建WebSocket连接失败: ' + error.message, 'error');
+                alert('创建WebSocket连接失败');
+            }
+        }
+
+        function disconnectWebSocket() {
+            if (websocket) {
+                websocket.close();
+                websocket = null;
+            }
+            isConnected = false;
+            isAuthenticated = false;
+            updateStatus();
+            log('WebSocket连接已断开', 'info');
+        }
+
+        function handleWebSocketMessage(data) {
+            try {
+                const message = JSON.parse(data);
+                wsMessageCount++;
+                document.getElementById('wsMessageCount').textContent = wsMessageCount;
+                
+                log(`收到WebSocket消息: ${JSON.stringify(message)}`, 'success');
+                
+                // 处理不同类型的消息
+                switch (message.type) {
+                    case 'AUTH_SUCCESS':
+                        isAuthenticated = true;
+                        log('用户认证成功', 'success');
+                        alert('用户认证成功');
+                        updateStatus();
+                        break;
+                    case 'AUTH_FAILURE':
+                        isAuthenticated = false;
+                        log('用户认证失败: ' + message.reason, 'error');
+                        alert('用户认证失败');
+                        updateStatus();
+                        break;
+                    case 'CHAT':
+                        log(`收到聊天消息: ${message.content}`, 'info');
+                        break;
+                    case 'NOTIFICATION':
+                        log(`收到通知: ${message.content}`, 'info');
+                        alert(message.content);
+                        break;
+                    default:
+                        log(`收到未知类型消息: ${message.type}`, 'warning');
+                }
+                
+                // 计算消息延迟
+                if (message.timestamp) {
+                    const latency = Date.now() - message.timestamp;
+                    document.getElementById('messageLatency').textContent = latency + 'ms';
+                }
+                
+            } catch (error) {
+                log('解析WebSocket消息失败: ' + error.message, 'error');
+            }
+        }
+
+        function sendAuthMessage() {
+            if (!isConnected) {
+                alert('请先连接WebSocket');
+                return;
+            }
+            
+            const token = document.getElementById('authToken').value;
+            const deviceId = document.getElementById('deviceId').value;
+            
+            if (!token) {
+                alert('请先获取认证Token');
+                return;
+            }
+            
+            const authMessage = {
+                type: 'AUTH',
+                token: token,
+                deviceId: deviceId,
+                timestamp: Date.now()
+            };
+            
+            websocket.send(JSON.stringify(authMessage));
+            log('发送认证消息: ' + JSON.stringify(authMessage), 'info');
+        }
+
+        function sendWebSocketMessage() {
+            if (!isConnected || !isAuthenticated) {
+                alert('请先连接WebSocket并完成认证');
+                return;
+            }
+            
+            const messageType = document.getElementById('messageType').value;
+            const messageContent = document.getElementById('messageContent').value;
+            
+            const message = {
+                type: messageType,
+                content: messageContent,
+                timestamp: Date.now()
+            };
+            
+            websocket.send(JSON.stringify(message));
+            log(`发送${messageType}消息: ${messageContent}`, 'info');
+        }
+
+        function testHeartbeat() {
+            if (!isConnected) {
+                alert('请先连接WebSocket');
+                return;
+            }
+            
+            const heartbeatMessage = {
+                type: 'HEARTBEAT',
+                timestamp: Date.now()
+            };
+            
+            websocket.send(JSON.stringify(heartbeatMessage));
+            log('发送心跳消息', 'info');
+        }
+
+        // 用户模块功能测试
+        async function registerUser() {
+            const username = document.getElementById('regUsername').value;
+            const password = document.getElementById('regPassword').value;
+            const deviceId = document.getElementById('regDeviceId').value;
+            
+            if (!username || !password || !deviceId) {
+                alert('请填写完整的注册信息');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${BUSINESS_SERVICE_URL}/api/users/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password,
+                        deviceId: deviceId
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    log(`用户注册成功: ${username}`, 'success');
+                    alert('用户注册成功');
+                    
+                    // 自动填充登录表单
+                    document.getElementById('loginUsername').value = username;
+                    document.getElementById('loginPassword').value = password;
+                    document.getElementById('loginDeviceId').value = deviceId;
+                    
+                } else {
+                    log(`用户注册失败: ${result.message}`, 'error');
+                    alert('用户注册失败: ' + result.message);
+                }
+                
+            } catch (error) {
+                log('用户注册请求失败: ' + error.message, 'error');
+                alert('用户注册请求失败');
+            }
+        }
+
+        async function loginUser() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const deviceId = document.getElementById('loginDeviceId').value;
+            
+            if (!username || !password || !deviceId) {
+                alert('请填写完整的登录信息');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${BUSINESS_SERVICE_URL}/api/users/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password,
+                        deviceId: deviceId
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    const token = result.data;
+                    log(`用户登录成功: ${username}`, 'success');
+                    alert('用户登录成功');
+                    
+                    // 保存token并自动填充WebSocket认证
+                    document.getElementById('authToken').value = token;
+                    
+                    // 如果WebSocket已连接，自动发送认证消息
+                    if (isConnected) {
+                        setTimeout(() => {
+                            sendAuthMessage();
+                        }, 500);
+                    }
+                    
+                } else {
+                    log(`用户登录失败: ${result.message}`, 'error');
+                    alert('用户登录失败: ' + result.message);
+                }
+                
+            } catch (error) {
+                log('用户登录请求失败: ' + error.message, 'error');
+                alert('用户登录请求失败');
+            }
+        }
+
+        async function logoutUser() {
+            try {
+                const response = await fetch(`${BUSINESS_SERVICE_URL}/api/users/logout`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    log('用户登出成功', 'success');
+                    alert('用户登出成功');
+                    
+                    // 清除认证状态
+                    document.getElementById('authToken').value = '';
+                    isAuthenticated = false;
+                    updateStatus();
+                    
+                } else {
+                    const result = await response.json();
+                    log(`用户登出失败: ${result.message}`, 'error');
+                    alert('用户登出失败: ' + result.message);
+                }
+                
+            } catch (error) {
+                log('用户登出请求失败: ' + error.message, 'error');
+                alert('用户登出请求失败');
+            }
+        }
+
+        async function updateProfile() {
+            const nickname = document.getElementById('profileNickname').value;
+            const email = document.getElementById('profileEmail').value;
+            
+            if (!nickname || !email) {
+                alert('请填写完整的资料信息');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${BUSINESS_SERVICE_URL}/api/users/profile`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        nickname: nickname,
+                        email: email
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    log('用户资料更新成功', 'success');
+                    alert('用户资料更新成功');
+                } else {
+                    log(`用户资料更新失败: ${result.message}`, 'error');
+                    alert('用户资料更新失败: ' + result.message);
+                }
+                
+            } catch (error) {
+                log('用户资料更新请求失败: ' + error.message, 'error');
+                alert('用户资料更新请求失败');
+            }
+        }
+
+        async function getProfile() {
+            try {
+                const response = await fetch(`${BUSINESS_SERVICE_URL}/api/users/profile`);
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    const profile = result.data;
+                    
+                    log('获取用户资料成功', 'success');
+                    alert('获取用户资料成功');
+                    
+                    // 显示用户资料
+                    document.getElementById('profileNickname').value = profile.nickname || '';
+                    document.getElementById('profileEmail').value = profile.email || '';
+                    
+                } else {
+                    const result = await response.json();
+                    log(`获取用户资料失败: ${result.message}`, 'error');
+                    alert('获取用户资料失败: ' + result.message);
+                }
+                
+            } catch (error) {
+                log('获取用户资料请求失败: ' + error.message, 'error');
+                alert('获取用户资料请求失败');
+            }
+        }
+
+        async function registerDevice() {
+            const deviceName = document.getElementById('deviceName').value;
+            const deviceType = document.getElementById('deviceType').value;
+            const deviceId = document.getElementById('deviceId').value;
+            
+            if (!deviceName || !deviceId) {
+                alert('请填写设备信息');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${BUSINESS_SERVICE_URL}/api/users/devices`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        deviceId: deviceId,
+                        deviceName: deviceName,
+                        deviceType: deviceType
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    log('设备注册成功', 'success');
+                    alert('设备注册成功');
+                } else {
+                    log(`设备注册失败: ${result.message}`, 'error');
+                    alert('设备注册失败: ' + result.message);
+                }
+                
+            } catch (error) {
+                log('设备注册请求失败: ' + error.message, 'error');
+                alert('设备注册请求失败');
+            }
+        }
+
+        async function getUserDevices() {
+            try {
+                const response = await fetch(`${BUSINESS_SERVICE_URL}/api/users/devices`);
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    const devices = result.data;
+                    
+                    log(`获取设备列表成功，共${devices.length}个设备`, 'success');
+                    alert('获取设备列表成功');
+                    
+                    // 显示设备信息
+                    devices.forEach(device => {
+                        log(`设备: ${device.deviceName} (${device.deviceType}) - ${device.status}`, 'info');
+                    });
+                    
+                } else {
+                    const result = await response.json();
+                    log(`获取设备列表失败: ${result.message}`, 'error');
+                    alert('获取设备列表失败: ' + result.message);
+                }
+                
+            } catch (error) {
+                log('获取设备列表请求失败: ' + error.message, 'error');
+                alert('获取设备列表请求失败');
+            }
+        }
+
+        // 事件处理测试
+        function startEventMonitoring() {
+            eventMonitoring = true;
+            log('开始事件监听', 'success');
+            alert('开始事件监听');
+        }
+
+        function stopEventMonitoring() {
+            eventMonitoring = false;
+            log('停止事件监听', 'warning');
+            alert('停止事件监听');
+        }
+
+        function clearEventLogs() {
+            const logContainer = document.getElementById('logContainer');
+            logContainer.innerHTML = '<div class="log-entry info">日志已清空</div>';
+            eventCount = 0;
+            wsMessageCount = 0;
+            document.getElementById('eventCount').textContent = '0';
+            document.getElementById('wsMessageCount').textContent = '0';
+        }
+
+        // 系统状态监控
+        function refreshStatus() {
+            updateStatus();
+            log('状态已刷新', 'info');
+        }
+
+        function startPerformanceTest() {
+            if (performanceTestInterval) {
+                clearInterval(performanceTestInterval);
+                performanceTestInterval = null;
+                log('停止性能测试', 'warning');
+                return;
+            }
+            
+            log('开始性能测试', 'success');
+            alert('开始性能测试');
+            
+            performanceTestInterval = setInterval(() => {
+                if (isConnected && isAuthenticated) {
+                    // 发送测试消息
+                    const testMessage = {
+                        type: 'PERFORMANCE_TEST',
+                        content: '性能测试消息',
+                        timestamp: Date.now()
+                    };
+                    
+                    websocket.send(JSON.stringify(testMessage));
+                    
+                    // 计算响应时间
+                    const responseTime = Date.now() - testMessage.timestamp;
+                    document.getElementById('responseTime').textContent = responseTime + 'ms';
+                }
+            }, 5000); // 每5秒发送一次
+        }
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            log('测试页面加载完成', 'success');
+            updateStatus();
+            
+            // 自动生成设备ID
+            const deviceId = 'test-device-' + Math.random().toString(36).substr(2, 9);
+            document.getElementById('deviceId').value = deviceId;
+            document.getElementById('regDeviceId').value = deviceId;
+            document.getElementById('loginDeviceId').value = deviceId;
+            
+            log(`自动生成设备ID: ${deviceId}`, 'info');
+        });
+
+        // 页面卸载时清理资源
+        window.addEventListener('beforeunload', function() {
+            if (websocket) {
+                websocket.close();
+            }
+            if (performanceTestInterval) {
+                clearInterval(performanceTestInterval);
+            }
+        });
+    </script>
+</body>
+</html> 

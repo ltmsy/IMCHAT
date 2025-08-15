@@ -17,65 +17,42 @@
     <description>IM系统前端业务服务，处理用户管理、社交管理、内容管理等业务逻辑</description>
 
     <dependencies>
-        <!-- 公共模块 -->
+        <!-- 公共模块 - 包含所有基础依赖 -->
         <dependency>
             <groupId>com.acme</groupId>
             <artifactId>common</artifactId>
             <version>${project.version}</version>
         </dependency>
         
-        <!-- Spring Boot Starters -->
+        <!-- 业务服务必要依赖 -->
+        
+        <!-- Spring Boot Web - 业务服务需要REST API -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-        
-        <!-- Lombok -->
+        <!-- Lombok - 代码中大量使用@Slf4j、@Data等注解 -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
         
-        <!-- 数据库相关 -->
+        <!-- 数据库相关 - 业务服务需要读写数据库 -->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
         </dependency>
         
+        <!-- H2数据库（测试环境） -->
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency>
-        
-        <!-- 连接池 -->
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-        </dependency>
-        
-        <!-- 测试依赖 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
             <scope>test</scope>
         </dependency>
         
+        <!-- 测试依赖 -->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>

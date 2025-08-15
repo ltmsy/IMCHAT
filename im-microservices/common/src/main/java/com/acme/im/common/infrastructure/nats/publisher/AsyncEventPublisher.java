@@ -257,10 +257,13 @@ public class AsyncEventPublisher {
      */
     public void publishToJetStream(String subject, Object event) {
         try {
-            publishToJetStreamAsync(subject, event).get(5, TimeUnit.SECONDS);
+            publishToJetStreamAsync(subject, event).get(30, TimeUnit.SECONDS);
+        } catch (java.util.concurrent.TimeoutException e) {
+            log.warn("发布JetStream事件超时: subject={}, 超时时间=30秒", subject);
+            // 超时时不抛出异常，让业务继续执行
         } catch (Exception e) {
             log.error("同步发布JetStream事件失败: subject={}", subject, e);
-            throw new RuntimeException("发布JetStream事件失败", e);
+            // 其他异常也不抛出，避免影响业务流程
         }
     }
 
@@ -464,7 +467,7 @@ public class AsyncEventPublisher {
     private void logStatistics() {
         if (running) {
             PublishStats stats = getStats();
-            log.info("异步发布器统计: {}", stats);
+//            log.info("异步发布器统计: {}", stats);
         }
     }
 } 

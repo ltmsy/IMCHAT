@@ -2,13 +2,15 @@ package com.acme.im.communication.event;
 
 import com.acme.im.communication.entity.Message;
 import com.acme.im.common.infrastructure.nats.publisher.AsyncEventPublisher;
+import com.acme.im.common.infrastructure.nats.dto.BaseEvent;
+import com.acme.im.common.infrastructure.nats.dto.MessageEvents;
+import com.acme.im.common.infrastructure.nats.dto.UserEvents;
+import com.acme.im.common.infrastructure.nats.constants.EventTopics;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 消息事件发布器
@@ -32,18 +34,13 @@ public class MessageEventPublisher {
     private final AsyncEventPublisher eventPublisher;
 
     /**
-     * NATS主题前缀
+     * 消息事件主题 - 使用统一的事件主题常量
      */
-    private static final String SUBJECT_PREFIX = "im.message.";
-    
-    /**
-     * 消息事件主题
-     */
-    private static final String MESSAGE_CREATED_SUBJECT = SUBJECT_PREFIX + "created";
-    private static final String MESSAGE_RECALLED_SUBJECT = SUBJECT_PREFIX + "recalled";
-    private static final String MESSAGE_EDITED_SUBJECT = SUBJECT_PREFIX + "edited";
-    private static final String MESSAGE_PINNED_SUBJECT = SUBJECT_PREFIX + "pinned";
-    private static final String MESSAGE_DELETED_SUBJECT = SUBJECT_PREFIX + "deleted";
+    private static final String MESSAGE_CREATED_SUBJECT = EventTopics.Communication.Message.SENT;
+    private static final String MESSAGE_RECALLED_SUBJECT = EventTopics.Communication.Message.RECALLED;
+    private static final String MESSAGE_EDITED_SUBJECT = EventTopics.Communication.Message.EDITED;
+    private static final String MESSAGE_PINNED_SUBJECT = EventTopics.Communication.Message.PINNED;
+    private static final String MESSAGE_DELETED_SUBJECT = EventTopics.Communication.Message.DELETED;
 
     /**
      * 发布消息创建事件
@@ -89,15 +86,20 @@ public class MessageEventPublisher {
      */
     public void publishMessageRecalled(Long conversationId, Long messageId, Long operatorId, String reason) {
         try {
-            Map<String, Object> eventData = new HashMap<>();
-            eventData.put("eventType", "MESSAGE_RECALLED");
-            eventData.put("messageId", messageId);
-            eventData.put("conversationId", conversationId);
-            eventData.put("operatorId", operatorId);
-            eventData.put("reason", reason);
-            eventData.put("timestamp", LocalDateTime.now());
+            MessageEvents.MessageRecalledEvent eventData = MessageEvents.MessageRecalledEvent.builder()
+                    .conversationId(conversationId)
+                    .messageId(messageId)
+                    .operatorId(operatorId)
+                    .reason(reason)
+                    .timestamp(LocalDateTime.now())
+                    .build();
 
-            eventPublisher.publishToJetStream(MESSAGE_RECALLED_SUBJECT, eventData);
+            BaseEvent<MessageEvents.MessageRecalledEvent> baseEvent = BaseEvent.createNotification(
+                    MESSAGE_RECALLED_SUBJECT, eventData)
+                    .fromService("communication-service", "default")
+                    .withUser(operatorId.toString(), null, null);
+
+            eventPublisher.publishToJetStream(MESSAGE_RECALLED_SUBJECT, baseEvent);
             
             log.info("发布消息撤回事件: messageId={}, conversationId={}, operatorId={}", 
                     messageId, conversationId, operatorId);
@@ -117,15 +119,20 @@ public class MessageEventPublisher {
      */
     public void publishMessageEdited(Long conversationId, Long messageId, Long operatorId, String newContent) {
         try {
-            Map<String, Object> eventData = new HashMap<>();
-            eventData.put("eventType", "MESSAGE_EDITED");
-            eventData.put("messageId", messageId);
-            eventData.put("conversationId", conversationId);
-            eventData.put("operatorId", operatorId);
-            eventData.put("newContent", newContent);
-            eventData.put("timestamp", LocalDateTime.now());
+            MessageEvents.MessageEditedEvent eventData = MessageEvents.MessageEditedEvent.builder()
+                    .conversationId(conversationId)
+                    .messageId(messageId)
+                    .operatorId(operatorId)
+                    .newContent(newContent)
+                    .timestamp(LocalDateTime.now())
+                    .build();
 
-            eventPublisher.publishToJetStream(MESSAGE_EDITED_SUBJECT, eventData);
+            BaseEvent<MessageEvents.MessageEditedEvent> baseEvent = BaseEvent.createNotification(
+                    MESSAGE_EDITED_SUBJECT, eventData)
+                    .fromService("communication-service", "default")
+                    .withUser(operatorId.toString(), null, null);
+
+            eventPublisher.publishToJetStream(MESSAGE_EDITED_SUBJECT, baseEvent);
             
             log.info("发布消息编辑事件: messageId={}, conversationId={}, operatorId={}", 
                     messageId, conversationId, operatorId);
@@ -144,14 +151,19 @@ public class MessageEventPublisher {
      */
     public void publishMessagePinned(Long conversationId, Long messageId, boolean pinned) {
         try {
-            Map<String, Object> eventData = new HashMap<>();
-            eventData.put("eventType", "MESSAGE_PINNED");
-            eventData.put("messageId", messageId);
-            eventData.put("conversationId", conversationId);
-            eventData.put("pinned", pinned);
-            eventData.put("timestamp", LocalDateTime.now());
+            MessageEvents.MessagePinnedEvent eventData = MessageEvents.MessagePinnedEvent.builder()
+                    .conversationId(conversationId)
+                    .messageId(messageId)
+                    .operatorId(null) // 这里可以传入操作者ID
+                    .pinned(pinned)
+                    .timestamp(LocalDateTime.now())
+                    .build();
 
-            eventPublisher.publishToJetStream(MESSAGE_PINNED_SUBJECT, eventData);
+            BaseEvent<MessageEvents.MessagePinnedEvent> baseEvent = BaseEvent.createNotification(
+                    MESSAGE_PINNED_SUBJECT, eventData)
+                    .fromService("communication-service", "default");
+
+            eventPublisher.publishToJetStream(MESSAGE_PINNED_SUBJECT, baseEvent);
             
             log.info("发布消息置顶事件: messageId={}, conversationId={}, pinned={}", 
                     messageId, conversationId, pinned);
@@ -170,14 +182,20 @@ public class MessageEventPublisher {
      */
     public void publishMessageDeleted(Long conversationId, Long messageId, Long operatorId) {
         try {
-            Map<String, Object> eventData = new HashMap<>();
-            eventData.put("eventType", "MESSAGE_DELETED");
-            eventData.put("messageId", messageId);
-            eventData.put("conversationId", conversationId);
-            eventData.put("operatorId", operatorId);
-            eventData.put("timestamp", LocalDateTime.now());
+            MessageEvents.MessageDeletedEvent eventData = MessageEvents.MessageDeletedEvent.builder()
+                    .conversationId(conversationId)
+                    .messageId(messageId)
+                    .operatorId(operatorId)
+                    .reason("用户删除")
+                    .timestamp(LocalDateTime.now())
+                    .build();
 
-            eventPublisher.publishToJetStream(MESSAGE_DELETED_SUBJECT, eventData);
+            BaseEvent<MessageEvents.MessageDeletedEvent> baseEvent = BaseEvent.createNotification(
+                    MESSAGE_DELETED_SUBJECT, eventData)
+                    .fromService("communication-service", "default")
+                    .withUser(operatorId.toString(), null, null);
+
+            eventPublisher.publishToJetStream(MESSAGE_DELETED_SUBJECT, baseEvent);
             
             log.info("发布消息删除事件: messageId={}, conversationId={}, operatorId={}", 
                     messageId, conversationId, operatorId);
@@ -195,13 +213,21 @@ public class MessageEventPublisher {
      */
     public void publishUserStatusEvent(Long userId, String status) {
         try {
-            Map<String, Object> eventData = new HashMap<>();
-            eventData.put("eventType", "USER_STATUS_CHANGED");
-            eventData.put("userId", userId);
-            eventData.put("status", status);
-            eventData.put("timestamp", LocalDateTime.now());
+            UserEvents.UserStatusChangeEvent eventData = UserEvents.UserStatusChangeEvent.builder()
+                    .userId(userId)
+                    .oldStatus(null)
+                    .newStatus(status)
+                    .reason("状态变更")
+                    .changeTime(LocalDateTime.now())
+                    .timestamp(LocalDateTime.now())
+                    .build();
 
-            eventPublisher.publishEvent("im.user.status", eventData);
+            BaseEvent<UserEvents.UserStatusChangeEvent> baseEvent = BaseEvent.createNotification(
+                    EventTopics.Business.User.STATUS_CHANGED, eventData)
+                    .fromService("communication-service", "default")
+                    .withUser(userId.toString(), null, null);
+
+            eventPublisher.publishEvent(EventTopics.Business.User.STATUS_CHANGED, baseEvent);
             
             log.info("发布用户状态事件: userId={}, status={}", userId, status);
 
@@ -219,13 +245,22 @@ public class MessageEventPublisher {
      */
     public void publishConnectionEvent(Long userId, String connectionId, String eventType) {
         try {
-            Map<String, Object> eventData = new HashMap<>();
-            eventData.put("eventType", eventType);
-            eventData.put("userId", userId);
-            eventData.put("connectionId", connectionId);
-            eventData.put("timestamp", LocalDateTime.now());
+            UserEvents.UserSessionEvent eventData = UserEvents.UserSessionEvent.builder()
+                    .userId(userId)
+                    .sessionId(connectionId)
+                    .eventType(eventType)
+                    .deviceId(null)
+                    .clientType(null)
+                    .eventTime(LocalDateTime.now())
+                    .timestamp(LocalDateTime.now())
+                    .build();
 
-            eventPublisher.publishEvent("im.connection." + eventType.toLowerCase(), eventData);
+            BaseEvent<UserEvents.UserSessionEvent> baseEvent = BaseEvent.createNotification(
+                    EventTopics.Communication.Connection.ESTABLISHED, eventData)
+                    .fromService("communication-service", "default")
+                    .withUser(userId.toString(), null, connectionId);
+
+            eventPublisher.publishEvent(EventTopics.Communication.Connection.ESTABLISHED, baseEvent);
             
             log.info("发布连接事件: userId={}, connectionId={}, eventType={}", 
                     userId, connectionId, eventType);

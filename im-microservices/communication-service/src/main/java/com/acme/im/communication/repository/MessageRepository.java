@@ -2,6 +2,7 @@ package com.acme.im.communication.repository;
 
 import com.acme.im.communication.config.MessageShardingStrategy;
 import com.acme.im.communication.entity.Message;
+import com.acme.im.common.infrastructure.database.annotation.DataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -25,6 +26,10 @@ import java.util.Optional;
  * 分表策略：按会话ID取模分表
  * 表名：messages_00 ~ messages_31
  * 
+ * 数据源策略：
+ * - 读操作：使用从库(SECONDARY) - 查询消息、获取历史记录等
+ * - 写操作：使用主库(PRIMARY) - 保存、更新、删除消息等
+ * 
  * @author IM开发团队
  * @since 1.0.0
  */
@@ -38,11 +43,12 @@ public class MessageRepository {
     private final MessageShardingStrategy shardingStrategy;
     
     /**
-     * 保存消息
+     * 保存消息 - 写操作，使用主库
      * 
      * @param message 消息对象
      * @return 保存后的消息（包含生成的ID）
      */
+    @DataSource(type = DataSource.DataSourceType.PRIMARY)
     public Message save(Message message) {
         String tableName = shardingStrategy.getTableName(message.getConversationId());
         
@@ -102,12 +108,13 @@ public class MessageRepository {
     }
     
     /**
-     * 根据ID查找消息
+     * 根据ID查找消息 - 读操作，使用从库
      * 
      * @param conversationId 会话ID（用于确定分表）
      * @param messageId 消息ID
      * @return 消息对象
      */
+    @DataSource(type = DataSource.DataSourceType.SECONDARY)
     public Optional<Message> findById(Long conversationId, Long messageId) {
         String tableName = shardingStrategy.getTableName(conversationId);
         
@@ -126,12 +133,13 @@ public class MessageRepository {
     }
     
     /**
-     * 查询会话的最新消息
+     * 查询会话的最新消息 - 读操作，使用从库
      * 
      * @param conversationId 会话ID
      * @param limit 限制数量
      * @return 消息列表
      */
+    @DataSource(type = DataSource.DataSourceType.SECONDARY)
     public List<Message> findLatestByConversationId(Long conversationId, int limit) {
         String tableName = shardingStrategy.getTableName(conversationId);
         
@@ -147,13 +155,14 @@ public class MessageRepository {
     }
     
     /**
-     * 分页查询会话消息历史
+     * 分页查询会话消息历史 - 读操作，使用从库
      * 
      * @param conversationId 会话ID
      * @param beforeSeq 在此序号之前的消息（用于分页）
      * @param limit 限制数量
      * @return 消息列表
      */
+    @DataSource(type = DataSource.DataSourceType.SECONDARY)
     public List<Message> findHistoryByConversationId(Long conversationId, Long beforeSeq, int limit) {
         String tableName = shardingStrategy.getTableName(conversationId);
         
@@ -182,12 +191,13 @@ public class MessageRepository {
     }
     
     /**
-     * 根据客户端消息ID查找消息（幂等性检查）
+     * 根据客户端消息ID查找消息（幂等性检查） - 读操作，使用从库
      * 
      * @param conversationId 会话ID
      * @param clientMsgId 客户端消息ID
      * @return 消息对象
      */
+    @DataSource(type = DataSource.DataSourceType.SECONDARY)
     public Optional<Message> findByClientMsgId(Long conversationId, String clientMsgId) {
         String tableName = shardingStrategy.getTableName(conversationId);
         
@@ -206,11 +216,12 @@ public class MessageRepository {
     }
 
     /**
-     * 更新消息
+     * 更新消息 - 写操作，使用主库
      * 
      * @param message 消息对象
      * @return 是否更新成功
      */
+    @DataSource(type = DataSource.DataSourceType.PRIMARY)
     public boolean update(Message message) {
         String tableName = shardingStrategy.getTableName(message.getConversationId());
         
@@ -241,13 +252,14 @@ public class MessageRepository {
     }
     
     /**
-     * 撤回消息
+     * 撤回消息 - 写操作，使用主库
      * 
      * @param conversationId 会话ID
      * @param messageId 消息ID
      * @param reason 撤回原因
      * @return 是否撤回成功
      */
+    @DataSource(type = DataSource.DataSourceType.PRIMARY)
     public boolean recallMessage(Long conversationId, Long messageId, String reason) {
         String tableName = shardingStrategy.getTableName(conversationId);
         
@@ -270,13 +282,14 @@ public class MessageRepository {
     }
     
     /**
-     * 编辑消息
+     * 编辑消息 - 写操作，使用主库
      * 
      * @param conversationId 会话ID
      * @param messageId 消息ID
      * @param newContent 新内容
      * @return 是否编辑成功
      */
+    @DataSource(type = DataSource.DataSourceType.PRIMARY)
     public boolean editMessage(Long conversationId, Long messageId, String newContent) {
         String tableName = shardingStrategy.getTableName(conversationId);
         
@@ -300,13 +313,14 @@ public class MessageRepository {
     }
     
     /**
-     * 置顶/取消置顶消息
+     * 置顶/取消置顶消息 - 写操作，使用主库
      * 
      * @param conversationId 会话ID
      * @param messageId 消息ID
      * @param pinned 是否置顶
      * @return 是否操作成功
      */
+    @DataSource(type = DataSource.DataSourceType.PRIMARY)
     public boolean pinMessage(Long conversationId, Long messageId, boolean pinned) {
         String tableName = shardingStrategy.getTableName(conversationId);
         
@@ -327,12 +341,13 @@ public class MessageRepository {
     }
     
     /**
-     * 删除消息（软删除）
+     * 删除消息（软删除） - 写操作，使用主库
      * 
      * @param conversationId 会话ID
      * @param messageId 消息ID
      * @return 是否删除成功
      */
+    @DataSource(type = DataSource.DataSourceType.PRIMARY)
     public boolean deleteMessage(Long conversationId, Long messageId) {
         String tableName = shardingStrategy.getTableName(conversationId);
         
@@ -353,11 +368,12 @@ public class MessageRepository {
     }
     
     /**
-     * 获取会话中置顶的消息
+     * 获取会话中置顶的消息 - 读操作，使用从库
      * 
      * @param conversationId 会话ID
      * @return 置顶消息列表
      */
+    @DataSource(type = DataSource.DataSourceType.SECONDARY)
     public List<Message> findPinnedMessages(Long conversationId) {
         String tableName = shardingStrategy.getTableName(conversationId);
         
@@ -371,11 +387,12 @@ public class MessageRepository {
     }
     
     /**
-     * 统计会话消息数量
+     * 统计会话消息数量 - 读操作，使用从库
      * 
      * @param conversationId 会话ID
      * @return 消息数量
      */
+    @DataSource(type = DataSource.DataSourceType.SECONDARY)
     public long countByConversationId(Long conversationId) {
         String tableName = shardingStrategy.getTableName(conversationId);
         

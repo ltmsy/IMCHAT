@@ -1,6 +1,6 @@
 package com.acme.im.common.discovery.registry;
 
-import com.acme.im.common.infrastructure.nats.publisher.EventPublisher;
+import com.acme.im.common.infrastructure.nats.publisher.AsyncEventPublisher;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import lombok.Data;
@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class ServiceRegistry {
 
-    private final EventPublisher eventPublisher;
+    private final AsyncEventPublisher eventPublisher;
     private final Gson gson;
     
     // 服务注册表
@@ -31,7 +31,7 @@ public class ServiceRegistry {
     // 服务健康检查缓存
     private final Map<String, HealthStatus> healthCache = new ConcurrentHashMap<>();
 
-    public ServiceRegistry(EventPublisher eventPublisher, Gson gson) {
+    public ServiceRegistry(AsyncEventPublisher eventPublisher, Gson gson) {
         this.eventPublisher = eventPublisher;
         this.gson = gson;
     }
@@ -53,7 +53,7 @@ public class ServiceRegistry {
             serviceRegistry.put(serviceInfo.getServiceId(), serviceInfo);
             
             // 发布服务注册事件
-            eventPublisher.publishEvent("im.service.registered", serviceInfo);
+            eventPublisher.publishToJetStream("im.service.registered", serviceInfo);
             
             log.info("服务注册成功: serviceId={}, serviceName={}, endpoint={}", 
                     serviceInfo.getServiceId(), serviceInfo.getServiceName(), serviceInfo.getEndpoint());
@@ -76,7 +76,7 @@ public class ServiceRegistry {
             ServiceInfo serviceInfo = serviceRegistry.remove(serviceId);
             if (serviceInfo != null) {
                 // 发布服务注销事件
-                eventPublisher.publishEvent("im.service.unregistered", serviceInfo);
+                eventPublisher.publishToJetStream("im.service.unregistered", serviceInfo);
                 
                 log.info("服务注销成功: serviceId={}, serviceName={}", serviceId, serviceInfo.getServiceName());
                 return true;
@@ -123,7 +123,7 @@ public class ServiceRegistry {
             healthCache.put(serviceId, healthStatus);
             
             // 发布健康状态更新事件
-            eventPublisher.publishEvent("im.service.health.updated", healthStatus);
+            eventPublisher.publishToJetStream("im.service.health.updated", healthStatus);
             
             log.debug("服务健康状态更新: serviceId={}, status={}", serviceId, healthStatus.getStatus());
         } catch (Exception e) {

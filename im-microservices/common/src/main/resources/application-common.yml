@@ -166,21 +166,36 @@ spring:
       socket-timeout: 30000        # Socket超时(毫秒)
       max-error-retry: 3           # 最大重试次数
 
-# JWT配置
-jwt:
-  secret: "IM_JWT_SECRET_KEY_FOR_DEVELOPMENT_ONLY_CHANGE_IN_PRODUCTION"
-  expiration: 86400 # 24小时，单位秒
-  refresh-expiration: 604800 # 7天，单位秒
-  issuer: "IM-System"
-  
-  # 性能优化配置
-  cache:
-    enabled: true                  # 启用JWT缓存
-    max-size: 10000               # 最大缓存数量
-    expire-after-write: 30m       # 写入后30分钟过期
-    expire-after-access: 15m      # 访问后15分钟过期
+  # 安全配置 - 统一安全策略
+  security:
+    # 密码编码器配置
+    password-encoder:
+      strength: 12
+      algorithm: "bcrypt"
+    
+    # JWT配置
+    jwt:
+      secret: "IM_JWT_SECRET_KEY_FOR_DEVELOPMENT_ONLY_CHANGE_IN_PRODUCTION"
+      expiration: 86400 # 24小时，单位秒
+      refresh-expiration: 604800 # 7天，单位秒
+      issuer: "IM-System"
+      
+      # 性能优化配置
+      cache:
+        enabled: true                  # 启用JWT缓存
+        max-size: 10000               # 最大缓存数量
+        expire-after-write: 30m       # 写入后30分钟过期
+        expire-after-access: 15m      # 访问后15分钟过期
+    
+    # CORS配置
+    cors:
+      allowed-origins: ["http://localhost:3000", "http://localhost:8080"]
+      allowed-methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+      allowed-headers: ["*"]
+      allow-credentials: true
+      max-age: 3600
 
-# 日志配置
+# 日志配置 - 统一日志策略
 logging:
   level:
     root: INFO
@@ -200,7 +215,7 @@ logging:
     max-history: 30
     total-size-cap: 3GB
 
-# 监控配置
+# 监控配置 - 统一监控策略
 management:
   endpoints:
     web:
@@ -271,7 +286,7 @@ management:
       enabled: true
       timeout: 5s
 
-# 性能调优配置
+# 性能调优配置 - 统一性能策略
 performance:
   # 缓存配置
   cache:
@@ -313,4 +328,62 @@ performance:
     slow-query-threshold: 1s
     
     # 连接泄露检测
-    connection-leak-detection: true 
+    connection-leak-detection: true
+
+# 服务发现和注册配置
+discovery:
+  # 服务注册配置
+  registry:
+    enabled: true
+    type: "nats"  # 使用NATS作为服务发现
+    
+  # 负载均衡配置
+  loadbalancer:
+    strategy: "round-robin"
+    health-check:
+      enabled: true
+      interval: 30s
+      timeout: 5s
+
+# 熔断器配置 - 统一熔断策略
+resilience4j:
+  # 熔断器配置
+  circuitbreaker:
+    instances:
+      default:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 60s
+        permitted-number-of-calls-in-half-open-state: 3
+        
+  # 重试配置
+  retry:
+    instances:
+      default:
+        max-attempts: 3
+        wait-duration: 1s
+        
+  # 限流配置
+  ratelimiter:
+    instances:
+      default:
+        limit-for-period: 100
+        limit-refresh-period: 1s
+        timeout-duration: 1s
+
+# 限流配置
+rate-limit:
+  # 全局限流配置
+  global:
+    enabled: true
+    requests-per-minute: 1000
+    
+  # 用户限流配置
+  user:
+    enabled: true
+    requests-per-minute: 100
+    
+  # API限流配置
+  api:
+    enabled: true
+    requests-per-minute: 500 

@@ -22,9 +22,12 @@ public final class SecurityConstants {
     public static final List<String> PUBLIC_ENDPOINTS = Arrays.asList(
         "/api/users/register",
         "/api/users/login",
+        "/api/test/**",
         "/actuator/**",
         "/swagger-ui/**",
         "/v3/api-docs/**",
+        "/ws/**",
+        "/ws-native/**",
         "/error"
     );
 

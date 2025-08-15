@@ -1,0 +1,328 @@
+syntax = "proto3";
+
+package com.acme.im.websocket;
+
+option java_multiple_files = true;
+option java_package = "com.acme.im.common.websocket.proto";
+option java_outer_classname = "WebSocketProto";
+
+// ================================
+// 基础消息结构
+// ================================
+
+/**
+ * WebSocket消息基础结构
+ * 外层固定通用字段，扩展层包含特定字段
+ */
+message WebSocketMessage {
+  // ================================
+  // 外层固定通用字段
+  // ================================
+  
+  // 消息ID（全局唯一）
+  string message_id = 1;
+  
+  // 消息类型
+  MessageType type = 2;
+  
+  // 消息状态
+  MessageStatus status = 3;
+  
+  // 发送者ID
+  string sender_id = 4;
+  
+  // 接收者ID（用户ID或群组ID）
+  string receiver_id = 5;
+  
+  // 会话ID
+  string conversation_id = 6;
+  
+  // 消息时间戳（Unix时间戳，毫秒）
+  int64 timestamp = 7;
+  
+  // 消息序列号（会话内唯一）
+  int64 sequence = 8;
+  
+  // 客户端消息ID（幂等性）
+  string client_message_id = 9;
+  
+  // 消息版本
+  string version = 10;
+  
+  // 设备ID（多端同步）
+  string device_id = 11;
+  
+  // 消息来源（web、mobile、desktop等）
+  string source = 12;
+  
+  // ================================
+  // 扩展层 - 根据消息类型选择对应的payload
+  // ================================
+  
+  oneof payload {
+    ChatMessage chat = 20;           // 聊天消息
+    NotificationMessage notification = 21; // 通知消息
+    SystemMessage system = 22;       // 系统消息
+    EventMessage event = 23;         // NATS事件通知
+  }
+}
+
+// ================================
+// 消息类型枚举
+// ================================
+
+enum MessageType {
+  // ================================
+  // 聊天消息类型
+  // ================================
+  CHAT_TEXT = 0;                    // 文本消息
+  CHAT_IMAGE = 1;                   // 图片消息
+  CHAT_FILE = 2;                    // 文件消息
+  CHAT_VOICE = 3;                   // 语音消息
+  CHAT_VIDEO = 4;                   // 视频消息
+  CHAT_LOCATION = 5;                // 位置消息
+  CHAT_CARD = 6;                    // 名片消息
+  
+  // 聊天消息特殊类型
+  CHAT_EDIT = 10;                   // 编辑消息
+  CHAT_QUOTE = 11;                  // 引用消息
+  CHAT_FORWARD = 12;                // 转发消息
+  CHAT_RECALL = 13;                 // 撤回消息
+  
+  // ================================
+  // 通知消息类型
+  // ================================
+  NOTIFICATION_ANNOUNCEMENT = 20;   // 公告通知
+  NOTIFICATION_ALERT = 21;          // 提醒通知
+  NOTIFICATION_PROMOTION = 22;      // 推广通知
+  NOTIFICATION_MAINTENANCE = 23;    // 维护通知
+  
+  // ================================
+  // 系统消息类型
+  // ================================
+  SYSTEM_CONNECT = 30;              // 连接消息
+  SYSTEM_DISCONNECT = 31;           // 断开连接
+  SYSTEM_HEARTBEAT = 32;            // 心跳消息
+  SYSTEM_AUTH = 33;                 // 认证消息
+  SYSTEM_STATUS = 34;               // 状态更新
+  
+  // ================================
+  // 事件消息类型（NATS事件通知）
+  // ================================
+  EVENT_USER_STATUS_CHANGE = 40;    // 用户状态变更
+  EVENT_GROUP_UPDATE = 41;          // 群组更新
+  EVENT_MESSAGE_STATUS_CHANGE = 42; // 消息状态变更
+  EVENT_SYSTEM_CONFIG_CHANGE = 43;  // 系统配置变更
+}
+
+// ================================
+// 消息状态枚举
+// ================================
+
+enum MessageStatus {
+  MESSAGE_DELETED = 0;              // 已删除
+  MESSAGE_NORMAL = 1;               // 正常
+  MESSAGE_PENDING = 2;              // 审核中
+  MESSAGE_REJECTED = 3;             // 已拒绝
+}
+
+// ================================
+// 聊天消息结构
+// ================================
+
+message ChatMessage {
+  // 消息内容
+  string content = 1;
+  
+  // 内容类型
+  string content_type = 2;
+  
+  // 扩展内容（JSON字符串）
+  string content_extra = 3;
+  
+  // 原始消息ID（编辑、引用、转发时使用）
+  string original_message_id = 4;
+  
+  // 操作类型
+  string operation_type = 5;
+  
+  // 引用信息
+  QuoteInfo quote_info = 6;
+  
+  // 转发信息
+  ForwardInfo forward_info = 7;
+  
+  // 编辑信息
+  EditInfo edit_info = 8;
+  
+  // 回复消息ID
+  string reply_to_id = 9;
+  
+  // 提及的用户ID列表（JSON字符串）
+  string mentions = 10;
+  
+  // 消息标签
+  repeated string tags = 11;
+  
+  // 消息优先级
+  int32 priority = 12;
+}
+
+// ================================
+// 引用消息信息
+// ================================
+
+message QuoteInfo {
+  // 被引用的消息ID
+  string quoted_message_id = 1;
+  
+  // 被引用的消息内容（截取）
+  string quoted_content = 2;
+  
+  // 被引用消息的发送者ID
+  string quoted_sender_id = 3;
+  
+  // 被引用消息的内容类型
+  string quoted_content_type = 4;
+  
+  // 引用原因
+  string quote_reason = 5;
+}
+
+// ================================
+// 转发消息信息
+// ================================
+
+message ForwardInfo {
+  // 原始会话ID
+  string original_conversation_id = 1;
+  
+  // 原始发送者ID
+  string original_sender_id = 2;
+  
+  // 转发原因
+  string forward_reason = 3;
+  
+  // 转发链（最多支持5级转发）
+  repeated string forward_chain = 4;
+}
+
+// ================================
+// 编辑消息信息
+// ================================
+
+message EditInfo {
+  // 原始内容
+  string original_content = 1;
+  
+  // 编辑原因
+  string edit_reason = 2;
+  
+  // 编辑次数
+  int32 edit_count = 3;
+  
+  // 最后编辑时间
+  int64 last_edit_time = 4;
+}
+
+// ================================
+// 通知消息结构
+// ================================
+
+message NotificationMessage {
+  // 通知标题
+  string title = 1;
+  
+  // 通知内容
+  string content = 2;
+  
+  // 通知类型
+  string notification_type = 3;
+  
+  // 通知级别：INFO、WARNING、ERROR、CRITICAL
+  string level = 4;
+  
+  // 通知分类
+  string category = 5;
+  
+  // 通知动作
+  string action = 6;
+  
+  // 动作URL
+  string action_url = 7;
+  
+  // 通知图标
+  string icon = 8;
+  
+  // 通知图片
+  string image = 9;
+  
+  // 通知标签
+  repeated string tags = 10;
+  
+  // 过期时间
+  int64 expires_at = 11;
+}
+
+// ================================
+// 系统消息结构
+// ================================
+
+message SystemMessage {
+  // 系统消息类型
+  string system_type = 1;
+  
+  // 系统消息内容
+  string content = 2;
+  
+  // 系统消息级别
+  string level = 3;
+  
+  // 系统消息分类
+  string category = 4;
+  
+  // 系统消息动作
+  string action = 5;
+  
+  // 动作参数（JSON字符串）
+  string action_params = 6;
+  
+  // 系统消息标签
+  repeated string tags = 7;
+  
+  // 过期时间
+  int64 expires_at = 8;
+}
+
+// ================================
+// 事件消息结构（NATS事件通知）
+// ================================
+
+message EventMessage {
+  // 事件类型
+  string event_type = 1;
+  
+  // 事件名称
+  string event_name = 2;
+  
+  // 事件数据（JSON字符串）
+  string event_data = 3;
+  
+  // 事件来源
+  string event_source = 4;
+  
+  // 事件时间
+  int64 event_time = 5;
+  
+  // 事件ID
+  string event_id = 6;
+  
+  // 事件版本
+  string event_version = 7;
+  
+  // 事件标签
+  repeated string tags = 8;
+  
+  // 事件元数据（JSON字符串）
+  string metadata = 9;
+} 

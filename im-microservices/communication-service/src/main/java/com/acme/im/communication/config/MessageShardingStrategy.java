@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
  * @author IM开发团队
  * @since 1.0.0
  */
-@Component
+@Component("communicationMessageShardingStrategy")
 public class MessageShardingStrategy {
 
     /**

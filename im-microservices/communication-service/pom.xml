@@ -17,52 +17,41 @@
     <description>IM系统通信服务，处理实时通信、消息路由、推送等</description>
 
     <dependencies>
-        <!-- 公共模块 -->
+        <!-- 公共模块 - 包含所有基础依赖 -->
         <dependency>
             <groupId>com.acme</groupId>
             <artifactId>common</artifactId>
             <version>${project.version}</version>
         </dependency>
         
-        <!-- Spring Boot WebFlux - 只用于WebSocket -->
+        <!-- 通信服务必要依赖 -->
+        
+        <!-- Spring Boot Web - 通信服务需要REST API -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         
-        <!-- Redis - 连接管理和缓存 -->
+        <!-- Spring Boot WebSocket - 通信服务核心功能 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
         
-        <!-- 数据验证 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
-        
-        <!-- JDBC支持 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jdbc</artifactId>
-        </dependency>
-        
-        <!-- Lombok -->
+        <!-- Lombok - 代码中使用@Slf4j等注解 -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
         
-        <!-- NATS客户端 - 事件发布 -->
+        <!-- JDBC支持 - 通信服务需要查询消息 -->
         <dependency>
-            <groupId>io.nats</groupId>
-            <artifactId>jnats</artifactId>
-            <version>2.16.14</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
         </dependency>
         
-        <!-- Jackson JSON处理 -->
+        <!-- Jackson JSON处理 - 通信服务需要处理JSON消息 -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -73,43 +62,7 @@
             <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
         
-        <!-- 数据库驱动 -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency>
-        
-        <!-- 连接池 -->
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-        </dependency>
-        
-        <!-- Netty - WebSocket底层支持 -->
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-        </dependency>
-        
-        <!-- 监控 - 基础健康检查 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-        
         <!-- 测试依赖 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        
-        <dependency>
-            <groupId>io.projectreactor</groupId>
-            <artifactId>reactor-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>

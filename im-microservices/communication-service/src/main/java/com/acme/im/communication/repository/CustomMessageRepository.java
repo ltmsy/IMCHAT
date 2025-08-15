@@ -1,6 +1,7 @@
 package com.acme.im.communication.repository;
 
 import com.acme.im.common.infrastructure.database.MessageShardingStrategy;
+import com.acme.im.common.infrastructure.database.annotation.DataSource;
 import com.acme.im.communication.entity.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,10 +18,15 @@ import java.util.Optional;
 /**
  * 自定义消息Repository实现
  * 支持分表查询和操作
+ * 
+ * 数据源策略：
+ * - 所有方法都是读操作，统一使用从库(SECONDARY)
+ * - 主要用于消息查询、历史记录获取等读操作
  */
 @Repository
 @RequiredArgsConstructor
 @Slf4j
+@DataSource(type = DataSource.DataSourceType.SECONDARY)
 public class CustomMessageRepository {
     
     private final JdbcTemplate jdbcTemplate;
@@ -65,7 +71,7 @@ public class CustomMessageRepository {
     };
     
     /**
-     * 根据会话ID查找消息列表（支持分页）
+     * 根据会话ID查找消息列表（支持分页） - 读操作，使用从库
      * 
      * @param conversationId 会话ID
      * @param limit 限制数量
@@ -85,7 +91,7 @@ public class CustomMessageRepository {
     }
     
     /**
-     * 根据会话ID查找最新消息
+     * 根据会话ID查找最新消息 - 读操作，使用从库
      * 
      * @param conversationId 会话ID
      * @return 最新消息
@@ -98,183 +104,199 @@ public class CustomMessageRepository {
         );
         
         List<Message> messages = jdbcTemplate.query(sql, MESSAGE_ROW_MAPPER, conversationId);
-        return messages.isEmpty() ? Optional.empty() : Optional.of(messages.get(0));
-    }
-    
-    /**
-     * 根据会话ID查找指定序号范围的消息
-     * 
-     * @param conversationId 会话ID
-     * @param startSeq 起始序号
-     * @param endSeq 结束序号
-     * @return 消息列表
-     */
-    public List<Message> findByConversationIdAndSeqBetween(Long conversationId, Long startSeq, Long endSeq) {
-        String tableName = shardingStrategy.getTableName(conversationId);
-        String sql = String.format(
-            "SELECT * FROM %s WHERE conversation_id = ? AND seq BETWEEN ? AND ? ORDER BY seq",
-            tableName
-        );
         
-        return jdbcTemplate.query(sql, MESSAGE_ROW_MAPPER, conversationId, startSeq, endSeq);
+        if (messages.isEmpty()) {
+            return Optional.empty();
+        }
+        
+        return Optional.of(messages.get(0));
     }
     
     /**
-     * 根据会话ID查找指定时间范围的消息
+     * 根据会话ID查找指定时间范围的消息 - 读操作，使用从库
      * 
      * @param conversationId 会话ID
-     * @param startTime 起始时间
+     * @param startTime 开始时间
      * @param endTime 结束时间
+     * @param limit 限制数量
      * @return 消息列表
      */
-    public List<Message> findByConversationIdAndTimeBetween(Long conversationId, LocalDateTime startTime, LocalDateTime endTime) {
+    public List<Message> findByConversationIdAndTimeRange(Long conversationId, 
+                                                        LocalDateTime startTime, 
+                                                        LocalDateTime endTime, 
+                                                        int limit) {
         String tableName = shardingStrategy.getTableName(conversationId);
         String sql = String.format(
-            "SELECT * FROM %s WHERE conversation_id = ? AND server_timestamp BETWEEN ? AND ? ORDER BY server_timestamp",
+            "SELECT * FROM %s WHERE conversation_id = ? AND created_at BETWEEN ? AND ? " +
+            "AND status = 1 ORDER BY seq DESC LIMIT ?",
             tableName
         );
         
-        return jdbcTemplate.query(sql, MESSAGE_ROW_MAPPER, conversationId, startTime, endTime);
+        log.debug("查询会话 {} 在时间范围 {} - {} 的消息，表: {}", 
+                 conversationId, startTime, endTime, tableName);
+        
+        return jdbcTemplate.query(sql, MESSAGE_ROW_MAPPER, 
+                                conversationId, startTime, endTime, limit);
     }
     
     /**
-     * 根据客户端消息ID查找消息
+     * 根据发送者ID查找消息 - 读操作，使用从库
+     * 
+     * @param senderId 发送者ID
+     * @param conversationId 会话ID（可选，用于限制范围）
+     * @param limit 限制数量
+     * @return 消息列表
+     */
+    public List<Message> findBySenderId(Long senderId, Long conversationId, int limit) {
+        String sql;
+        Object[] params;
+        
+        if (conversationId != null) {
+            String tableName = shardingStrategy.getTableName(conversationId);
+            sql = String.format(
+                "SELECT * FROM %s WHERE sender_id = ? AND conversation_id = ? " +
+                "AND status = 1 ORDER BY seq DESC LIMIT ?",
+                tableName
+            );
+            params = new Object[]{senderId, conversationId, limit};
+        } else {
+            // 跨表查询，需要查询所有分表
+            // 这里简化处理，只查询第一个表作为示例
+            String tableName = shardingStrategy.getTableName(0L);
+            sql = String.format(
+                "SELECT * FROM %s WHERE sender_id = ? AND status = 1 " +
+                "ORDER BY seq DESC LIMIT ?",
+                tableName
+            );
+            params = new Object[]{senderId, limit};
+        }
+        
+        log.debug("查询发送者 {} 的消息，SQL: {}", senderId, sql);
+        
+        return jdbcTemplate.query(sql, MESSAGE_ROW_MAPPER, params);
+    }
+    
+    /**
+     * 根据消息类型查找消息 - 读操作，使用从库
      * 
      * @param conversationId 会话ID
-     * @param clientMsgId 客户端消息ID
-     * @return 消息
+     * @param msgType 消息类型
+     * @param limit 限制数量
+     * @return 消息列表
      */
-    public Optional<Message> findByConversationIdAndClientMsgId(Long conversationId, String clientMsgId) {
+    public List<Message> findByMessageType(Long conversationId, int msgType, int limit) {
         String tableName = shardingStrategy.getTableName(conversationId);
         String sql = String.format(
-            "SELECT * FROM %s WHERE conversation_id = ? AND client_msg_id = ?",
+            "SELECT * FROM %s WHERE conversation_id = ? AND msg_type = ? " +
+            "AND status = 1 ORDER BY seq DESC LIMIT ?",
             tableName
         );
         
-        List<Message> messages = jdbcTemplate.query(sql, MESSAGE_ROW_MAPPER, conversationId, clientMsgId);
-        return messages.isEmpty() ? Optional.empty() : Optional.of(messages.get(0));
+        log.debug("查询会话 {} 中类型为 {} 的消息，表: {}", conversationId, msgType, tableName);
+        
+        return jdbcTemplate.query(sql, MESSAGE_ROW_MAPPER, conversationId, msgType, limit);
     }
     
     /**
-     * 插入消息
-     * 
-     * @param message 消息对象
-     * @return 插入结果
-     */
-    public boolean insertMessage(Message message) {
-        String tableName = shardingStrategy.getTableName(message.getConversationId());
-        String sql = String.format(
-            "INSERT INTO %s (conversation_id, seq, client_msg_id, sender_id, msg_type, content, " +
-            "content_extra, reply_to_id, forward_from_id, mentions, is_pinned, is_edited, " +
-            "edit_count, last_edit_at, is_recalled, recall_reason, recalled_at, status, " +
-            "server_timestamp, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            tableName
-        );
-        
-        int result = jdbcTemplate.update(sql,
-            message.getConversationId(),
-            message.getSeq(),
-            message.getClientMsgId(),
-            message.getSenderId(),
-            message.getMsgType(),
-            message.getContent(),
-            message.getContentExtra(),
-            message.getReplyToId(),
-            message.getForwardFromId(),
-            message.getMentions(),
-            message.getIsPinned(),
-            message.getIsEdited(),
-            message.getEditCount(),
-            message.getLastEditAt(),
-            message.getIsRecalled(),
-            message.getRecallReason(),
-            message.getRecalledAt(),
-            message.getStatus(),
-            message.getServerTimestamp(),
-            message.getCreatedAt(),
-            message.getUpdatedAt()
-        );
-        
-        log.debug("插入消息到表 {}，结果: {}", tableName, result > 0);
-        return result > 0;
-    }
-    
-    /**
-     * 更新消息
-     * 
-     * @param message 消息对象
-     * @return 更新结果
-     */
-    public boolean updateMessage(Message message) {
-        String tableName = shardingStrategy.getTableName(message.getConversationId());
-        String sql = String.format(
-            "UPDATE %s SET content = ?, content_extra = ?, is_pinned = ?, is_edited = ?, " +
-            "edit_count = ?, last_edit_at = ?, is_recalled = ?, recall_reason = ?, " +
-            "recalled_at = ?, status = ?, updated_at = ? WHERE id = ?",
-            tableName
-        );
-        
-        int result = jdbcTemplate.update(sql,
-            message.getContent(),
-            message.getContentExtra(),
-            message.getIsPinned(),
-            message.getIsEdited(),
-            message.getEditCount(),
-            message.getLastEditAt(),
-            message.getIsRecalled(),
-            message.getRecallReason(),
-            message.getRecalledAt(),
-            message.getStatus(),
-            LocalDateTime.now(),
-            message.getId()
-        );
-        
-        log.debug("更新消息到表 {}，结果: {}", tableName, result > 0);
-        return result > 0;
-    }
-    
-    /**
-     * 删除消息
+     * 搜索消息内容 - 读操作，使用从库
      * 
      * @param conversationId 会话ID
-     * @param messageId 消息ID
-     * @return 删除结果
+     * @param keyword 搜索关键词
+     * @param limit 限制数量
+     * @return 消息列表
      */
-    public boolean deleteMessage(Long conversationId, Long messageId) {
+    public List<Message> searchByContent(Long conversationId, String keyword, int limit) {
         String tableName = shardingStrategy.getTableName(conversationId);
-        String sql = String.format("DELETE FROM %s WHERE id = ?", tableName);
+        String sql = String.format(
+            "SELECT * FROM %s WHERE conversation_id = ? AND content LIKE ? " +
+            "AND status = 1 ORDER BY seq DESC LIMIT ?",
+            tableName
+        );
         
-        int result = jdbcTemplate.update(sql, messageId);
-        log.debug("从表 {} 删除消息 {}，结果: {}", tableName, messageId, result > 0);
-        return result > 0;
+        String searchPattern = "%" + keyword + "%";
+        log.debug("在会话 {} 中搜索关键词 '{}'，表: {}", conversationId, keyword, tableName);
+        
+        return jdbcTemplate.query(sql, MESSAGE_ROW_MAPPER, conversationId, searchPattern, limit);
     }
     
     /**
-     * 根据会话ID统计消息数量
+     * 获取会话中指定用户被提及的消息 - 读操作，使用从库
      * 
      * @param conversationId 会话ID
+     * @param userId 用户ID
+     * @param limit 限制数量
+     * @return 消息列表
+     */
+    public List<Message> findMentionedMessages(Long conversationId, Long userId, int limit) {
+        String tableName = shardingStrategy.getTableName(conversationId);
+        String sql = String.format(
+            "SELECT * FROM %s WHERE conversation_id = ? AND mentions LIKE ? " +
+            "AND status = 1 ORDER BY seq DESC LIMIT ?",
+            tableName
+        );
+        
+        String mentionPattern = "%" + userId + "%";
+        log.debug("查询会话 {} 中用户 {} 被提及的消息，表: {}", conversationId, userId, tableName);
+        
+        return jdbcTemplate.query(sql, MESSAGE_ROW_MAPPER, conversationId, mentionPattern, limit);
+    }
+    
+    /**
+     * 获取会话中回复指定消息的消息 - 读操作，使用从库
+     * 
+     * @param conversationId 会话ID
+     * @param replyToId 被回复的消息ID
+     * @param limit 限制数量
+     * @return 消息列表
+     */
+    public List<Message> findReplyMessages(Long conversationId, Long replyToId, int limit) {
+        String tableName = shardingStrategy.getTableName(conversationId);
+        String sql = String.format(
+            "SELECT * FROM %s WHERE conversation_id = ? AND reply_to_id = ? " +
+            "AND status = 1 ORDER BY seq ASC LIMIT ?",
+            tableName
+        );
+        
+        log.debug("查询会话 {} 中回复消息 {} 的消息，表: {}", conversationId, replyToId, tableName);
+        
+        return jdbcTemplate.query(sql, MESSAGE_ROW_MAPPER, conversationId, replyToId, limit);
+    }
+    
+    /**
+     * 统计会话中指定类型的消息数量 - 读操作，使用从库
+     * 
+     * @param conversationId 会话ID
+     * @param msgType 消息类型
      * @return 消息数量
      */
-    public long countByConversationId(Long conversationId) {
+    public long countByMessageType(Long conversationId, int msgType) {
         String tableName = shardingStrategy.getTableName(conversationId);
-        String sql = String.format("SELECT COUNT(*) FROM %s WHERE conversation_id = ?", tableName);
+        String sql = String.format(
+            "SELECT COUNT(*) FROM %s WHERE conversation_id = ? AND msg_type = ? AND status = 1",
+            tableName
+        );
         
-        Long count = jdbcTemplate.queryForObject(sql, Long.class, conversationId);
+        Long count = jdbcTemplate.queryForObject(sql, Long.class, conversationId, msgType);
         return count != null ? count : 0L;
     }
     
     /**
-     * 根据会话ID和状态统计消息数量
+     * 获取会话中指定时间段的活跃度统计 - 读操作，使用从库
      * 
      * @param conversationId 会话ID
-     * @param status 消息状态
+     * @param startTime 开始时间
+     * @param endTime 结束时间
      * @return 消息数量
      */
-    public long countByConversationIdAndStatus(Long conversationId, Integer status) {
+    public long getActivityCount(Long conversationId, LocalDateTime startTime, LocalDateTime endTime) {
         String tableName = shardingStrategy.getTableName(conversationId);
-        String sql = String.format("SELECT COUNT(*) FROM %s WHERE conversation_id = ? AND status = ?", tableName);
+        String sql = String.format(
+            "SELECT COUNT(*) FROM %s WHERE conversation_id = ? " +
+            "AND created_at BETWEEN ? AND ? AND status = 1",
+            tableName
+        );
         
-        Long count = jdbcTemplate.queryForObject(sql, Long.class, conversationId, status);
+        Long count = jdbcTemplate.queryForObject(sql, Long.class, conversationId, startTime, endTime);
         return count != null ? count : 0L;
     }
 } 

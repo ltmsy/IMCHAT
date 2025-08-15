@@ -1,49 +1,56 @@
 package com.acme.im.communication.config;
 
-import com.acme.im.communication.realtime.ImWebSocketHandler;
-import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.reactive.HandlerMapping;
-import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
-import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
+import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
+import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
 /**
  * WebSocket配置类
- * 配置WebSocket路由和处理器
+ * 使用传统Spring WebSocket，支持STOMP协议
  * 
- * @author IM开发团队
+ * @author acme
  * @since 1.0.0
  */
 @Configuration
-@RequiredArgsConstructor
-public class WebSocketConfig {
-
-    private final ImWebSocketHandler webSocketHandler;
+@EnableWebSocketMessageBroker
+public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     /**
-     * WebSocket路由映射
+     * 配置消息代理
+     * 
+     * @param config 消息代理配置
      */
-    @Bean
-    public HandlerMapping webSocketHandlerMapping() {
-        Map<String, org.springframework.web.reactive.socket.WebSocketHandler> urlMap = new HashMap<>();
-        urlMap.put("/ws", webSocketHandler);
+    @Override
+    public void configureMessageBroker(MessageBrokerRegistry config) {
+        // 启用简单的内存消息代理，用于向客户端广播消息
+        // 客户端订阅以"/topic"开头的目标
+        config.enableSimpleBroker("/topic", "/queue");
         
-        SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
-        mapping.setUrlMap(urlMap);
-        mapping.setOrder(1);
+        // 设置应用程序目标的前缀
+        // 客户端发送消息到以"/app"开头的目标
+        config.setApplicationDestinationPrefixes("/app");
         
-        return mapping;
+        // 设置用户目标的前缀
+        // 客户端可以发送消息到以"/user"开头的目标，用于点对点通信
+        config.setUserDestinationPrefix("/user");
     }
 
     /**
-     * WebSocket处理器适配器
+     * 注册STOMP端点
+     * 
+     * @param registry STOMP端点注册表
      */
-    @Bean
-    public WebSocketHandlerAdapter handlerAdapter() {
-        return new WebSocketHandlerAdapter();
+    @Override
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        // 注册STOMP端点，客户端通过这个端点建立WebSocket连接
+        registry.addEndpoint("/ws")
+                .setAllowedOriginPatterns("*") // 允许所有来源，生产环境应该限制
+                .withSockJS(); // 启用SockJS支持，提供降级方案
+        
+        // 注册原生WebSocket端点
+        registry.addEndpoint("/ws-native")
+                .setAllowedOriginPatterns("*");
     }
 } 

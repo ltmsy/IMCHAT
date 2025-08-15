@@ -5,6 +5,18 @@
     <file url="file://$PROJECT_DIR$/admin-service/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/business-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/business-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/common-cache/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/common-cache/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/common-core/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/common-core/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/common-database/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/common-database/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/common-messaging/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/common-messaging/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/common-monitoring/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/common-monitoring/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/common-security/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/common-security/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/common/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/common/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/communication-service/src/main/java" charset="UTF-8" />

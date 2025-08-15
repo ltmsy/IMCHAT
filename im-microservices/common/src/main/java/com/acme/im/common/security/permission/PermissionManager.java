@@ -1,6 +1,6 @@
 package com.acme.im.common.security.permission;
 
-import com.acme.im.common.infrastructure.nats.publisher.EventPublisher;
+import com.acme.im.common.infrastructure.nats.publisher.AsyncEventPublisher;
 import com.google.gson.Gson;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class PermissionManager {
 
     @Autowired
-    private EventPublisher eventPublisher;
+    private AsyncEventPublisher eventPublisher;
 
     @Autowired
     private Gson gson;
@@ -327,7 +327,7 @@ public class PermissionManager {
             event.setTimestamp(System.currentTimeMillis());
             event.setMetadata(new HashMap<>());
             
-            eventPublisher.publishEvent("im.permission.change", event);
+            eventPublisher.publishToJetStream("im.permission.change", event);
             
         } catch (Exception e) {
             log.error("发布权限变更事件失败", e);

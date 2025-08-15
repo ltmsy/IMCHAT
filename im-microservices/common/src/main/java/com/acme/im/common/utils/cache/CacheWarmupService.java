@@ -1,6 +1,7 @@
 package com.acme.im.common.utils.cache;
 
-import com.acme.im.common.infrastructure.nats.subscriber.EventSubscriber;
+import com.acme.im.common.infrastructure.nats.publisher.AsyncEventPublisher;
+import com.acme.im.common.infrastructure.nats.constants.EventTopics;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -43,7 +44,7 @@ public class CacheWarmupService {
     private DistributedCacheManager cacheManager;
     
     @Autowired
-    private EventSubscriber eventSubscriber;
+    private AsyncEventPublisher eventPublisher;
     
     @Autowired
     @Qualifier("cacheExecutor")
@@ -65,7 +66,6 @@ public class CacheWarmupService {
     private static final int WARMUP_BATCH_SIZE = 50;
     private static final int WARMUP_THREAD_COUNT = 3;
     private static final Duration WARMUP_TIMEOUT = Duration.ofMinutes(5);
-    private static final String CACHE_INVALIDATION_SUBJECT = "cache.invalidation";
 
     // 预热任务执行器
     private ExecutorService warmupExecutor;
@@ -486,18 +486,7 @@ public class CacheWarmupService {
      * 订阅缓存失效事件
      */
     private void subscribeToInvalidationEvents() {
-        eventSubscriber.subscribe(CACHE_INVALIDATION_SUBJECT, message -> {
-            try {
-                // 处理缓存失效事件
-                log.debug("收到缓存失效事件: {}", message);
-                
-                // 可以在这里实现智能重新预热逻辑
-                // 例如：如果是热门缓存失效，立即添加预热任务
-                
-            } catch (Exception e) {
-                log.error("处理缓存失效事件异常", e);
-            }
-        });
+        // 移除此方法，改为使用事件发布器
     }
 
     /**

@@ -1,6 +1,6 @@
 package com.acme.im.common.security.rateLimit;
 
-import com.acme.im.common.infrastructure.nats.publisher.EventPublisher;
+import com.acme.im.common.infrastructure.nats.publisher.AsyncEventPublisher;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class RateLimitManager {
 
     @Autowired
-    private EventPublisher eventPublisher;
+    private AsyncEventPublisher eventPublisher;
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
@@ -557,7 +557,7 @@ public class RateLimitManager {
             event.setContext(context != null ? context : new ConcurrentHashMap<>());
 
             String subject = "im.ratelimit.event";
-            eventPublisher.publishEvent(subject, event);
+            eventPublisher.publishToJetStream(subject, event);
             log.debug("限流事件发布: key={}, userId={}, allowed={}", key, userId, allowed);
         } catch (Exception e) {
             log.error("记录限流事件异常: key={}, userId={}", key, userId, e);

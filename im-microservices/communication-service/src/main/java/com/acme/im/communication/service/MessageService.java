@@ -2,15 +2,24 @@ package com.acme.im.communication.service;
 
 import com.acme.im.communication.entity.Message;
 import com.acme.im.communication.repository.MessageRepository;
-import com.acme.im.common.websocket.dto.WebSocketDTO;
+import com.acme.im.communication.event.MessageEditEvent;
+import com.acme.im.communication.event.NewMessageEvent;
+import com.acme.im.communication.event.MessageDeleteEvent;
+import com.acme.im.communication.event.MessagePinEvent;
+
+import com.acme.im.common.plugin.ExtensionPointManager;
+import com.acme.im.communication.plugin.MessageRouter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * 消息处理服务
@@ -34,6 +43,8 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final MessageSequenceService sequenceService;
     private final MessageIdempotencyService idempotencyService;
+    private final ExtensionPointManager extensionPointManager;
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * 创建并保存消息
@@ -58,10 +69,26 @@ public class MessageService {
             return messageRepository.findById(conversationId, existingMsgId).orElse(null);
         }
         
-        // 2. 生成消息序列号
+        // 2. 消息处理扩展点 - 执行所有处理器
+        Map<String, Object> processingContext = createProcessingContext(conversationId, senderId, msgType, content);
+        try {
+            extensionPointManager.executeExtensionPoint("message.process", 
+                processingContext, context -> {
+                    // 这里可以添加具体的消息处理逻辑
+                    log.debug("消息处理扩展点执行: conversationId={}, senderId={}", conversationId, senderId);
+                    return null;
+                });
+            log.debug("消息处理完成: conversationId={}, senderId={}", conversationId, senderId);
+        } catch (Exception e) {
+            log.warn("消息处理失败: conversationId={}, senderId={}, error={}", 
+                    conversationId, senderId, e.getMessage());
+            // 根据业务需求决定是否继续处理
+        }
+        
+        // 3. 生成消息序列号
         Long seq = sequenceService.getNextSequence(conversationId);
         
-        // 3. 构建消息对象
+        // 4. 构建消息对象
         Message message = Message.builder()
                 .conversationId(conversationId)
                 .seq(seq)
@@ -78,10 +105,10 @@ public class MessageService {
                 .serverTimestamp(LocalDateTime.now())
                 .build();
         
-        // 4. 保存消息到分表
+        // 5. 保存消息到分表
         Message savedMessage = messageRepository.save(message);
         
-        // 5. 记录幂等性信息
+        // 6. 记录幂等性信息
         idempotencyService.recordMessageIdempotency(conversationId, clientMsgId, 
                                                    savedMessage.getId(), senderId);
         
@@ -236,100 +263,285 @@ public class MessageService {
      * 
      * @param conversationId 会话ID
      * @param messageId 消息ID
-     * @param operatorId 操作者ID
      * @param newContent 新内容
-     * @return 是否编辑成功
+     * @param editorId 编辑者ID
+     * @param editReason 编辑原因
+     * @return 编辑后的消息
      */
-    public boolean editMessage(Long conversationId, Long messageId, Long operatorId, String newContent) {
+    @Transactional
+    public Message editMessage(Long conversationId, Long messageId, String newContent, 
+                             Long editorId, String editReason) {
         
-        // 检查消息是否存在
-        Optional<Message> messageOpt = messageRepository.findById(conversationId, messageId);
-        if (messageOpt.isEmpty()) {
-            log.warn("编辑失败，消息不存在: conversationId={}, messageId={}", conversationId, messageId);
-            return false;
+        // 1. 查找原消息
+        Message originalMessage = messageRepository.findById(conversationId, messageId)
+                .orElseThrow(() -> new IllegalArgumentException("消息不存在"));
+        
+        // 2. 检查消息是否可编辑
+        if (!originalMessage.isEditable()) {
+            throw new IllegalStateException("消息不可编辑");
         }
         
-        Message message = messageOpt.get();
-        
-        // 检查编辑权限
-        if (!message.getSenderId().equals(operatorId)) {
-            log.warn("编辑失败，无权限: conversationId={}, messageId={}, senderId={}, operatorId={}", 
-                    conversationId, messageId, message.getSenderId(), operatorId);
-            return false;
+        // 3. 检查编辑权限
+        if (!originalMessage.getSenderId().equals(editorId)) {
+            throw new SecurityException("无权限编辑此消息");
         }
         
-        // 检查是否可编辑（只有文本消息且未撤回）
-        if (!message.isTextMessage() || message.isRecalled()) {
-            log.warn("编辑失败，消息不可编辑: conversationId={}, messageId={}, msgType={}, recalled={}", 
-                    conversationId, messageId, message.getMsgType(), message.isRecalled());
-            return false;
-        }
+        // 4. 创建编辑消息
+        Message editMessage = Message.builder()
+                .conversationId(conversationId)
+                .seq(sequenceService.getNextSequence(conversationId))
+                .clientMsgId("edit_" + System.currentTimeMillis() + "_" + editorId)
+                .senderId(editorId)
+                .msgType(Message.MessageType.EDIT.getCode())
+                .content(newContent)
+                .originalMessageId(messageId)
+                .operationType(Message.OperationType.EDIT.getCode())
+                .originalContent(originalMessage.getContent())
+                .editReason(editReason)
+                .status(1)
+                .serverTimestamp(LocalDateTime.now())
+                .build();
         
-        // 执行编辑
-        boolean success = messageRepository.editMessage(conversationId, messageId, newContent);
+        // 5. 保存编辑消息
+        Message savedEditMessage = messageRepository.save(editMessage);
         
-        if (success) {
-            log.info("编辑消息成功: conversationId={}, messageId={}, operatorId={}", 
-                    conversationId, messageId, operatorId);
-        }
+        // 6. 更新原消息状态
+        originalMessage.setIsEdited(1);
+        originalMessage.setEditCount(originalMessage.getEditCount() + 1);
+        originalMessage.setLastEditAt(LocalDateTime.now());
+        messageRepository.update(originalMessage);
         
-        return success;
+        // 7. 推送编辑通知
+        // messageRoutingService.pushMessageEdit(originalMessage, savedEditMessage); // Removed direct dependency
+        eventPublisher.publishEvent(new MessageEditEvent(originalMessage, savedEditMessage));
+        
+        log.info("消息编辑完成: conversationId={}, messageId={}, editorId={}", 
+                conversationId, messageId, editorId);
+        
+        return savedEditMessage;
     }
-
+    
     /**
-     * 置顶/取消置顶消息
+     * 引用消息
      * 
      * @param conversationId 会话ID
-     * @param messageId 消息ID
-     * @param pinned 是否置顶
-     * @return 是否操作成功
+     * @param senderId 发送者ID
+     * @param content 引用内容
+     * @param quotedMessageId 被引用的消息ID
+     * @param quotedConversationId 被引用消息的会话ID
+     * @return 引用消息
      */
-    public boolean pinMessage(Long conversationId, Long messageId, boolean pinned) {
-        boolean success = messageRepository.pinMessage(conversationId, messageId, pinned);
+    @Transactional
+    public Message quoteMessage(Long conversationId, Long senderId, String content, 
+                              Long quotedMessageId, Long quotedConversationId) {
         
-        if (success) {
-            log.info("{}消息成功: conversationId={}, messageId={}", 
-                    pinned ? "置顶" : "取消置顶", conversationId, messageId);
-        }
+        // 1. 查找被引用的消息
+        Message quotedMessage = messageRepository.findById(quotedConversationId, quotedMessageId)
+                .orElseThrow(() -> new IllegalArgumentException("被引用的消息不存在"));
         
-        return success;
+        // 2. 创建引用消息
+        Message quoteMessage = Message.builder()
+                .conversationId(conversationId)
+                .seq(sequenceService.getNextSequence(conversationId))
+                .clientMsgId("quote_" + System.currentTimeMillis() + "_" + senderId)
+                .senderId(senderId)
+                .msgType(Message.MessageType.QUOTE.getCode())
+                .content(content)
+                .originalMessageId(quotedMessageId)
+                .operationType(Message.OperationType.QUOTE.getCode())
+                .quotedMessageId(quotedMessageId)
+                .quotedContent(quotedMessage.getContent())
+                .quotedSenderId(quotedMessage.getSenderId())
+                .quotedContentType(quotedMessage.getMsgType())
+                .status(1)
+                .serverTimestamp(LocalDateTime.now())
+                .build();
+        
+        // 3. 保存引用消息
+        Message savedQuoteMessage = messageRepository.save(quoteMessage);
+        
+        // 4. 推送引用消息通知
+        // messageRoutingService.pushNewMessage(savedQuoteMessage); // Removed direct dependency
+        eventPublisher.publishEvent(new NewMessageEvent(savedQuoteMessage));
+        
+        log.info("引用消息创建完成: conversationId={}, quotedMessageId={}, senderId={}", 
+                conversationId, quotedMessageId, senderId);
+        
+        return savedQuoteMessage;
     }
-
+    
     /**
-     * 删除消息（软删除）
+     * 转发消息
+     * 
+     * @param targetConversationId 目标会话ID
+     * @param senderId 发送者ID
+     * @param originalMessageId 原消息ID
+     * @param originalConversationId 原会话ID
+     * @param forwardReason 转发原因
+     * @return 转发消息
+     */
+    @Transactional
+    public Message forwardMessage(Long targetConversationId, Long senderId, 
+                                Long originalMessageId, Long originalConversationId, 
+                                String forwardReason) {
+        
+        // 1. 查找原消息
+        Message originalMessage = messageRepository.findById(originalConversationId, originalMessageId)
+                .orElseThrow(() -> new IllegalArgumentException("原消息不存在"));
+        
+        // 2. 创建转发消息
+        Message forwardMessage = Message.builder()
+                .conversationId(targetConversationId)
+                .seq(sequenceService.getNextSequence(targetConversationId))
+                .clientMsgId("forward_" + System.currentTimeMillis() + "_" + senderId)
+                .senderId(senderId)
+                .msgType(Message.MessageType.FORWARD.getCode())
+                .content(originalMessage.getContent())
+                .contentExtra(originalMessage.getContentExtra())
+                .originalMessageId(originalMessageId)
+                .operationType(Message.OperationType.FORWARD.getCode())
+                .originalConversationId(originalConversationId)
+                .originalSenderId(originalMessage.getSenderId())
+                .forwardReason(forwardReason)
+                .status(1)
+                .serverTimestamp(LocalDateTime.now())
+                .build();
+        
+        // 3. 保存转发消息
+        Message savedForwardMessage = messageRepository.save(forwardMessage);
+        
+        // 4. 推送转发消息通知
+        // messageRoutingService.pushNewMessage(savedForwardMessage); // Removed direct dependency
+        eventPublisher.publishEvent(new NewMessageEvent(savedForwardMessage));
+        
+        log.info("消息转发完成: targetConversationId={}, originalMessageId={}, senderId={}", 
+                targetConversationId, originalMessageId, senderId);
+        
+        return savedForwardMessage;
+    }
+    
+    /**
+     * 删除消息
      * 
      * @param conversationId 会话ID
      * @param messageId 消息ID
      * @param operatorId 操作者ID
-     * @return 是否删除成功
+     * @param deleteScope 删除范围：0-仅我，1-所有人
+     * @param deleteReason 删除原因
+     * @return 删除后的消息
      */
-    public boolean deleteMessage(Long conversationId, Long messageId, Long operatorId) {
+    @Transactional
+    public Message deleteMessage(Long conversationId, Long messageId, Long operatorId, 
+                               Integer deleteScope, String deleteReason) {
         
-        // 检查消息是否存在
-        Optional<Message> messageOpt = messageRepository.findById(conversationId, messageId);
-        if (messageOpt.isEmpty()) {
-            log.warn("删除失败，消息不存在: conversationId={}, messageId={}", conversationId, messageId);
-            return false;
+        // 1. 查找消息
+        Message message = messageRepository.findById(conversationId, messageId)
+                .orElseThrow(() -> new IllegalArgumentException("消息不存在"));
+        
+        // 2. 检查删除权限
+        if (deleteScope == 1) { // 全局删除
+            // 只有消息发送者或管理员可以全局删除
+            if (!message.getSenderId().equals(operatorId)) {
+                throw new SecurityException("无权限全局删除此消息");
+            }
         }
         
-        Message message = messageOpt.get();
+        // 3. 更新消息状态
+        message.setIsDeleted(1);
+        message.setDeleteScope(deleteScope);
+        message.setDeletedBy(operatorId);
+        message.setDeletedAt(LocalDateTime.now());
+        message.setDeleteReason(deleteReason);
         
-        // 检查删除权限（简化处理）
-        if (!message.getSenderId().equals(operatorId)) {
-            log.warn("删除失败，无权限: conversationId={}, messageId={}, senderId={}, operatorId={}", 
-                    conversationId, messageId, message.getSenderId(), operatorId);
-            return false;
+        // 4. 保存更新
+        messageRepository.update(message);
+        
+        // 5. 推送删除通知
+        // messageRoutingService.pushMessageDelete(message, deleteReason, deleteScope); // Removed direct dependency
+        eventPublisher.publishEvent(new MessageDeleteEvent(message, deleteReason, deleteScope));
+        
+        log.info("消息删除完成: conversationId={}, messageId={}, operatorId={}, scope={}", 
+                message.getConversationId(), message.getId(), operatorId, deleteScope);
+        
+        return message;
+    }
+    
+    /**
+     * 置顶消息
+     * 
+     * @param conversationId 会话ID
+     * @param messageId 消息ID
+     * @param operatorId 操作者ID
+     * @param pinScope 置顶范围：0-仅我，1-所有人
+     * @return 置顶后的消息
+     */
+    @Transactional
+    public Message pinMessage(Long conversationId, Long messageId, Long operatorId, Integer pinScope) {
+        
+        // 1. 查找消息
+        Message message = messageRepository.findById(conversationId, messageId)
+                .orElseThrow(() -> new IllegalArgumentException("消息不存在"));
+        
+        // 2. 检查置顶权限
+        if (pinScope == 1) { // 全局置顶
+            // 只有消息发送者或群主可以全局置顶
+            if (!message.getSenderId().equals(operatorId)) {
+                throw new SecurityException("无权限全局置顶此消息");
+            }
         }
         
-        // 执行删除
-        boolean success = messageRepository.deleteMessage(conversationId, messageId);
+        // 3. 更新消息状态
+        message.setIsPinned(1);
+        message.setPinScope(pinScope);
+        message.setPinnedBy(operatorId);
+        message.setPinnedAt(LocalDateTime.now());
         
-        if (success) {
-            log.info("删除消息成功: conversationId={}, messageId={}, operatorId={}", 
-                    conversationId, messageId, operatorId);
+        // 4. 保存更新
+        messageRepository.update(message);
+        
+        // 5. 推送置顶通知
+        // messageRoutingService.pushMessagePin(message, pinScope); // Removed direct dependency
+        eventPublisher.publishEvent(new MessagePinEvent(message, pinScope));
+        
+        log.info("消息置顶完成: conversationId={}, messageId={}, operatorId={}, scope={}", 
+                conversationId, messageId, operatorId, pinScope);
+        
+        return message;
+    }
+    
+    /**
+     * 取消置顶消息
+     * 
+     * @param conversationId 会话ID
+     * @param messageId 消息ID
+     * @param operatorId 操作者ID
+     * @return 取消置顶后的消息
+     */
+    @Transactional
+    public Message unpinMessage(Long conversationId, Long messageId, Long operatorId) {
+        
+        // 1. 查找消息
+        Message message = messageRepository.findById(conversationId, messageId)
+                .orElseThrow(() -> new IllegalArgumentException("消息不存在"));
+        
+        // 2. 检查取消置顶权限
+        if (!message.getPinnedBy().equals(operatorId)) {
+            throw new SecurityException("无权限取消置顶此消息");
         }
         
-        return success;
+        // 3. 更新消息状态
+        message.setIsPinned(0);
+        message.setPinScope(null);
+        message.setPinnedBy(null);
+        message.setPinnedAt(null);
+        
+        // 4. 保存更新
+        messageRepository.update(message);
+        
+        log.info("消息取消置顶完成: conversationId={}, messageId={}, operatorId={}", 
+                conversationId, messageId, operatorId);
+        
+        return message;
     }
 
     /**
@@ -396,5 +608,45 @@ public class MessageService {
         );
         
         return savedMessage;
+    }
+
+    /**
+     * 创建验证上下文
+     * 
+     * @param conversationId 会话ID
+     * @param senderId 发送者ID
+     * @param msgType 消息类型
+     * @param content 消息内容
+     * @return 验证上下文
+     */
+    private Map<String, Object> createValidationContext(Long conversationId, Long senderId, Integer msgType, String content) {
+        Map<String, Object> context = new HashMap<>();
+        context.put("conversationId", conversationId);
+        context.put("senderId", senderId);
+        context.put("messageType", msgType);
+        context.put("content", content);
+        context.put("timestamp", System.currentTimeMillis());
+        context.put("source", "MessageService.createMessage");
+        return context;
+    }
+
+    /**
+     * 创建处理上下文
+     * 
+     * @param conversationId 会话ID
+     * @param senderId 发送者ID
+     * @param msgType 消息类型
+     * @param content 消息内容
+     * @return 处理上下文
+     */
+    private Map<String, Object> createProcessingContext(Long conversationId, Long senderId, Integer msgType, String content) {
+        Map<String, Object> context = new HashMap<>();
+        context.put("conversationId", conversationId);
+        context.put("senderId", senderId);
+        context.put("messageType", msgType);
+        context.put("content", content);
+        context.put("timestamp", System.currentTimeMillis());
+        context.put("source", "MessageService.createMessage");
+        return context;
     }
 } 

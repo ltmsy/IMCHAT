@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @since 1.0.0
  */
 @SpringBootApplication(scanBasePackages = "com.acme.im")
-@MapperScan("com.acme.im.business.repository")
+@MapperScan("com.acme.im.business.module.*.repository")
 public class BusinessServiceApplication {
 
     public static void main(String[] args) {

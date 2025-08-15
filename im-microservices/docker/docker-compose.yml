@@ -9,13 +9,14 @@ services:
       - "4222:4222"      # NATS客户端端口
       - "8222:8222"      # NATS管理端口
     command: >
-      -js
-      -m 8222
-      -D
-      -l /var/log/nats.log
+      -c /etc/nats/nats.conf
     volumes:
       - nats-data:/data
       - nats-logs:/var/log
+      - ./nats-config:/etc/nats
+    environment:
+      - NATS_USER=nats
+      - NATS_PASS=nats123
     networks:
       - im-network
     restart: unless-stopped

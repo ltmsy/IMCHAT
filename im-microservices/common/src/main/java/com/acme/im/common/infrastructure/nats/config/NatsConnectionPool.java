@@ -40,10 +40,10 @@ public class NatsConnectionPool {
     private Options natsOptions;
 
     // 连接池配置
-    private static final int DEFAULT_MIN_CONNECTIONS = 5;
-    private static final int DEFAULT_MAX_CONNECTIONS = 20;
+    private static final int DEFAULT_MIN_CONNECTIONS = 10;
+    private static final int DEFAULT_MAX_CONNECTIONS = 50;
     private static final int DEFAULT_MAX_IDLE_TIME_MS = 300000; // 5分钟
-    private static final int DEFAULT_CONNECTION_TIMEOUT_MS = 10000; // 10秒
+    private static final int DEFAULT_CONNECTION_TIMEOUT_MS = 15000; // 15秒
     
     // 连接池
     private final BlockingQueue<PooledConnection> availableConnections = new LinkedBlockingQueue<>();

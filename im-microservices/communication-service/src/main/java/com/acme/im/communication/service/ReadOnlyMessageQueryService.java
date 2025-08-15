@@ -2,6 +2,7 @@ package com.acme.im.communication.service;
 
 import com.acme.im.common.infrastructure.database.MessageShardingUtils;
 import com.acme.im.common.infrastructure.database.MessageQueryBuilder;
+import com.acme.im.common.infrastructure.database.annotation.DataSource;
 import com.acme.im.communication.entity.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,11 +20,16 @@ import java.util.Optional;
  * 只读消息查询服务
  * 专门负责消息查询操作，不进行写操作
  * 
+ * 数据源策略：
+ * - 所有方法都是读操作，统一使用从库(SECONDARY)
+ * - 通过@Transactional(readOnly = true)进一步确保只读特性
+ * 
  * @author IM开发团队
  * @since 1.0.0
  */
 @Service
 @Transactional(readOnly = true) // 明确指定只读事务
+@DataSource(type = DataSource.DataSourceType.SECONDARY) // 使用从库
 public class ReadOnlyMessageQueryService {
 
     @Autowired
@@ -63,7 +69,7 @@ public class ReadOnlyMessageQueryService {
     };
 
     /**
-     * 查询会话的最新消息
+     * 查询会话的最新消息 - 读操作，使用从库
      * 
      * @param conversationId 会话ID
      * @param limit 限制数量
@@ -81,7 +87,7 @@ public class ReadOnlyMessageQueryService {
     }
 
     /**
-     * 分页查询会话消息
+     * 分页查询会话消息 - 读操作，使用从库
      * 
      * @param conversationId 会话ID
      * @param offset 偏移量

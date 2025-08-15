@@ -4,89 +4,74 @@ server:
 spring:
   application:
     name: communication-service
+  
+  # 引用公共配置 - 继承所有基础配置
   profiles:
-    active: dev
-    include: common  # 引用公共配置
-        
-  # 数据库配置 - 通信服务使用公共配置的从库（查询消息）
-  # 无需额外配置，直接使用公共模块的从库配置
-        
-  # Redis配置 - 覆盖公共配置（通信服务需要更高的连接数）
-  data:
-    redis:
-      lettuce:
-        pool:
-          max-active: 20
-          max-idle: 10
-          min-idle: 5
-          max-wait: 2000ms
+    include: common
 
-# NATS配置 - 覆盖公共配置
-nats:
-  connection-name: communication-service
-  jetstream:
-    domain: im-communication
+# 通信服务特有配置 - 只配置通信相关的
+app:
+  communication:
+    # WebSocket配置 - 通信服务核心功能
+    websocket:
+      enabled: true
+      path: /ws
+      max-connections: 10000
+      max-message-size: 1048576  # 1MB
+      heartbeat:
+        interval: 30s
+        timeout: 90s
+      connection:
+        max-per-user: 5
+        idle-timeout: 300s
+        auth-timeout: 10s
     
-# WebSocket配置 - 通信服务核心功能
-websocket:
-  enabled: true
-  path: /ws
-  max-connections: 10000
-  max-message-size: 1048576  # 1MB
-  heartbeat:
-    interval: 30s
-    timeout: 90s
-  connection:
-    max-per-user: 5
-    idle-timeout: 300s
-    auth-timeout: 10s
-
-# 消息配置 - 通信服务核心功能
-message:
-  # 分表配置
-  sharding:
-    enabled: true
-    table-count: 32
-    strategy: conversation_id_mod
-  # 消息处理配置
-  processing:
-    batch-size: 100
-    max-retry: 3
-    timeout: 30s
-  # 序列号配置
-  sequence:
-    cache-size: 1000
-    increment-step: 1
-    
-# 推送配置 - 通信服务核心功能
-push:
-  enabled: true
-  offline:
-    enabled: true
-    max-queue-size: 10000
-    batch-size: 50
-  notification:
-    enabled: true
-    providers:
-      - type: websocket
+    # 消息配置 - 通信服务核心功能
+    message:
+      # 分表配置
+      sharding:
         enabled: true
-      - type: fcm
-        enabled: false
-        
-# 路由配置 - 通信服务核心功能
-routing:
-  strategy: consistent-hash
-  load-balancer: round-robin
-  failover:
-    enabled: true
-    max-retry: 3
-    timeout: 5s
+        table-count: 32
+        strategy: conversation_id_mod
+      # 消息处理配置
+      processing:
+        batch-size: 100
+        max-retry: 3
+        timeout: 30s
+      # 序列号配置
+      sequence:
+        cache-size: 1000
+        increment-step: 1
+    
+    # 推送配置 - 通信服务核心功能
+    push:
+      enabled: true
+      offline:
+        enabled: true
+        max-queue-size: 10000
+        batch-size: 50
+      notification:
+        enabled: true
+        providers:
+          - type: websocket
+            enabled: true
+          - type: fcm
+            enabled: false
+    
+    # 路由配置 - 通信服务核心功能
+    routing:
+      strategy: consistent-hash
+      load-balancer: round-robin
+      failover:
+        enabled: true
+        max-retry: 3
+        timeout: 5s
 
-# 通信服务特有的日志配置（覆盖公共配置）
+# 通信服务特有的日志配置
 logging:
   level:
     com.acme.im.communication: DEBUG
-    org.springframework.web.reactive: INFO
+    org.springframework.web.socket: INFO
 
 ---
 # 开发环境配置

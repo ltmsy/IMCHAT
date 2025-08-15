@@ -2,6 +2,7 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Annotation profile for IM Microservices" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
@@ -15,12 +16,26 @@
         <module name="communication-service" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="common-cache" target="17" />
+      <module name="common-core" target="17" />
+      <module name="common-database" target="17" />
+      <module name="common-messaging" target="17" />
+      <module name="common-monitoring" target="17" />
+      <module name="common-security" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="admin-service" options="-parameters" />
       <module name="business-service" options="-parameters" />
       <module name="common" options="-parameters" />
+      <module name="common-cache" options="-parameters" />
+      <module name="common-core" options="-parameters" />
+      <module name="common-database" options="-parameters" />
+      <module name="common-messaging" options="-parameters" />
+      <module name="common-monitoring" options="-parameters" />
+      <module name="common-security" options="-parameters" />
       <module name="communication-service" options="-parameters" />
     </option>
   </component>

@@ -1,6 +1,6 @@
 package com.acme.im.common.utils.monitoring;
 
-import com.acme.im.common.infrastructure.nats.publisher.EventPublisher;
+import com.acme.im.common.infrastructure.nats.publisher.AsyncEventPublisher;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class MonitoringManager {
 
     @Autowired
-    private EventPublisher eventPublisher;
+    private AsyncEventPublisher eventPublisher;
 
     // 监控指标缓存
     private final Map<String, Metric> metricCache = new ConcurrentHashMap<>();
@@ -559,7 +559,7 @@ public class MonitoringManager {
             event.setMetadata(new ConcurrentHashMap<>());
 
             String subject = "im.monitoring.metric";
-            eventPublisher.publishEvent(subject, event);
+            eventPublisher.publishToJetStream(subject, event);
             log.debug("指标事件发布: eventType={}, metricName={}", eventType, metricName);
         } catch (Exception e) {
             log.error("发布指标事件异常: eventType={}, metricName={}", eventType, metricName, e);
@@ -579,7 +579,7 @@ public class MonitoringManager {
             event.setMetadata(new ConcurrentHashMap<>());
 
             String subject = "im.monitoring.health";
-            eventPublisher.publishEvent(subject, event);
+            eventPublisher.publishToJetStream(subject, event);
             log.debug("健康检查事件发布: checkName={}, status={}", checkName, status);
         } catch (Exception e) {
             log.error("发布健康检查事件异常: checkName={}, status={}", checkName, status, e);

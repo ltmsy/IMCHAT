@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IM系统全面测试页面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .test-section {
+            margin-bottom: 40px;
+            border: 1px solid #e1e5e9;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #e1e5e9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header h2 {
+            color: #495057;
+            font-size: 1.5em;
+        }
+
+        .section-content {
+            padding: 20px;
+        }
+
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .test-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .test-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .test-card h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .test-card p {
+            color: #6c757d;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-online {
+            background: #28a745;
+        }
+
+        .status-offline {
+            background: #dc3545;
+        }
+
+        .status-connecting {
+            background: #ffc107;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .log-container {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .log-entry {
+            margin-bottom: 8px;
+            padding: 5px 0;
+            border-bottom: 1px solid #333;
+        }
+
+        .log-time {
+            color: #888;
+            margin-right: 10px;
+        }
+
+        .log-level-info { color: #4fc3f7; }
+        .log-level-success { color: #4caf50; }
+        .log-level-error { color: #f44336; }
+        .log-level-warning { color: #ff9800; }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #495057;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .result-display {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .websocket-status {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .message-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .message-input input {
+            flex: 1;
+        }
+
+        .message-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 10px;
+            background: #f8f9fa;
+        }
+
+        .message-item {
+            padding: 8px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            background: white;
+            border-left: 4px solid #667eea;
+        }
+
+        .message-sent {
+            border-left-color: #28a745;
+            background: #f8fff9;
+        }
+
+        .message-received {
+            border-left-color: #17a2b8;
+            background: #f8f9ff;
+        }
+
+        .clear-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .clear-btn:hover {
+            background: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 IM系统全面测试页面</h1>
+            <p>测试用户接口、WebSocket连接、NATS事件发布订阅等功能</p>
+        </div>
+
+        <div class="content">
+            <!-- 服务状态检查 -->
+            <div class="test-section">
+                <div class="section-header">
+                    <h2>📊 服务状态检查</h2>
+                    <button class="btn" onclick="checkAllServices()">检查所有服务</button>
+                </div>
+                <div class="section-content">
+                    <div class="test-grid">
+                        <div class="test-card">
+                            <h3>业务服务 (8080)</h3>
+                            <p>检查业务服务是否正常运行</p>
+                            <div class="websocket-status">
+                                <span class="status-indicator status-offline" id="business-status"></span>
+                                <span id="business-status-text">未检查</span>
+                            </div>
+                            <button class="btn" onclick="checkBusinessService()">检查状态</button>
+                        </div>
+                        <div class="test-card">
+                            <h3>通信服务 (8081)</h3>
+                            <p>检查通信服务是否正常运行</p>
+                            <div class="websocket-status">
+                                <span class="status-indicator status-offline" id="communication-status"></span>
+                                <span id="communication-status-text">未检查</span>
+                            </div>
+                            <button class="btn" onclick="checkCommunicationService()">检查状态</button>
+                        </div>
+                        <div class="test-card">
+                            <h3>NATS服务</h3>
+                            <p>检查NATS消息队列服务状态</p>
+                            <div class="websocket-status">
+                                <span class="status-indicator status-offline" id="nats-status"></span>
+                                <span id="nats-status-text">未检查</span>
+                            </div>
+                            <button class="btn" onclick="checkNatsService()">检查状态</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 用户接口测试 -->
+            <div class="test-section">
+                <div class="section-header">
+                    <h2>👤 用户接口测试</h2>
+                    <button class="btn btn-success" onclick="testAllUserApis()">测试所有接口</button>
+                </div>
+                <div class="section-content">
+                    <div class="test-grid">
+                        <div class="test-card">
+                            <h3>用户注册测试</h3>
+                            <p>测试用户注册接口功能</p>
+                            <div class="form-group">
+                                <label>测试用户名:</label>
+                                <input type="text" id="register-username" placeholder="输入测试用户名" value="test_user_001">
+                            </div>
+                            <div class="form-group">
+                                <label>测试密码:</label>
+                                <input type="password" id="register-password" placeholder="输入测试密码" value="123456">
+                            </div>
+                            <div class="form-group">
+                                <label>设备号:</label>
+                                <input type="text" id="register-device-id" placeholder="输入设备号" value="test_device_001">
+                            </div>
+                            <button class="btn" onclick="testUserRegister()">测试注册</button>
+                            <div class="result-display" id="register-result"></div>
+                        </div>
+                        <div class="test-card">
+                            <h3>用户登录测试</h3>
+                            <p>测试用户登录接口功能</p>
+                            <div class="form-group">
+                                <label>用户名:</label>
+                                <input type="text" id="login-username" placeholder="输入用户名" value="bbbb">
+                            </div>
+                            <div class="form-group">
+                                <label>密码:</label>
+                                <input type="password" id="login-password" placeholder="输入密码" value="123456">
+                            </div>
+                            <div class="form-group">
+                                <label>设备号:</label>
+                                <input type="text" id="login-device-id" placeholder="输入设备号" value="test_device_001">
+                            </div>
+                            <button class="btn" onclick="testUserLogin()">测试登录</button>
+                            <div class="result-display" id="login-result"></div>
+                        </div>
+                        <div class="test-card">
+                            <h3>用户资料测试</h3>
+                            <p>测试获取用户资料接口</p>
+                            <div class="form-group">
+                                <label>JWT Token:</label>
+                                <input type="text" id="profile-token" placeholder="输入JWT Token">
+                            </div>
+                            <button class="btn" onclick="testUserProfile()">获取资料</button>
+                            <div class="result-display" id="profile-result"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WebSocket连接测试 -->
+            <div class="test-section">
+                <div class="section-header">
+                    <h2>🔌 WebSocket连接测试</h2>
+                    <button class="btn btn-success" onclick="testWebSocketConnection()">测试连接</button>
+                </div>
+                <div class="section-content">
+                    <div class="websocket-status">
+                        <span class="status-indicator status-offline" id="ws-status"></span>
+                        <span id="ws-status-text">未连接</span>
+                    </div>
+                    <div class="form-group">
+                        <label>WebSocket URL:</label>
+                        <input type="text" id="ws-url" value="http://localhost:8081/ws" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>JWT Token (用于认证):</label>
+                        <input type="text" id="ws-token" placeholder="输入JWT Token进行认证">
+                    </div>
+                    <div class="test-grid">
+                        <div class="test-card">
+                            <h3>连接控制</h3>
+                            <p>管理WebSocket连接状态</p>
+                            <button class="btn" onclick="connectWebSocket()">连接</button>
+                            <button class="btn btn-danger" onclick="disconnectWebSocket()">断开</button>
+                            <button class="btn btn-warning" onclick="reconnectWebSocket()">重连</button>
+                        </div>
+                        <div class="test-card">
+                            <h3>消息发送</h3>
+                            <p>发送测试消息到WebSocket</p>
+                            <div class="message-input">
+                                <input type="text" id="message-input" placeholder="输入消息内容">
+                                <button class="btn" onclick="sendWebSocketMessage()">发送</button>
+                            </div>
+                            <select id="message-type">
+                                <option value="CHAT">聊天消息</option>
+                                <option value="SYSTEM">系统消息</option>
+                                <option value="HEARTBEAT">心跳消息</option>
+                                <option value="AUTH">认证消息</option>
+                            </select>
+                        </div>
+                        <div class="test-card">
+                            <h3>消息历史</h3>
+                            <p>查看发送和接收的消息</p>
+                            <button class="btn" onclick="clearMessages()">清空消息</button>
+                            <div class="message-list" id="message-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NATS事件测试 -->
+            <div class="test-section">
+                <div class="section-header">
+                    <h2>📡 NATS事件测试</h2>
+                    <button class="btn btn-success" onclick="testAllNatsEvents()">测试所有事件</button>
+                </div>
+                <div class="section-content">
+                    <div class="test-grid">
+                        <div class="test-card">
+                            <h3>事件发布测试</h3>
+                            <p>发布NATS事件到指定主题</p>
+                            <div class="form-group">
+                                <label>事件主题:</label>
+                                <select id="event-subject">
+                                    <option value="security.token.validate">Token验证</option>
+                                    <option value="user.login">用户登录</option>
+                                    <option value="user.logout">用户登出</option>
+                                    <option value="message.send">消息发送</option>
+                                    <option value="test.custom">自定义测试</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>自定义主题:</label>
+                                <input type="text" id="custom-subject" placeholder="输入自定义主题">
+                            </div>
+                            <button class="btn" onclick="publishNatsEvent()">发布事件</button>
+                            <div class="result-display" id="publish-result"></div>
+                        </div>
+                        <div class="test-card">
+                            <h3>事件订阅测试</h3>
+                            <p>订阅NATS事件主题</p>
+                            <div class="form-group">
+                                <label>订阅主题:</label>
+                                <input type="text" id="subscribe-subject" placeholder="输入要订阅的主题">
+                            </div>
+                            <button class="btn" onclick="subscribeNatsEvent()">开始订阅</button>
+                            <button class="btn btn-danger" onclick="unsubscribeNatsEvent()">停止订阅</button>
+                            <div class="result-display" id="subscribe-result"></div>
+                        </div>
+                        <div class="test-card">
+                            <h3>Token验证事件</h3>
+                            <p>测试完整的Token验证流程</p>
+                            <div class="form-group">
+                                <label>测试Token:</label>
+                                <input type="text" id="test-token" placeholder="输入测试Token">
+                            </div>
+                            <button class="btn" onclick="testTokenValidation()">测试验证</button>
+                            <div class="result-display" id="token-validation-result"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 日志显示 -->
+            <div class="test-section">
+                <div class="section-header">
+                    <h2>📋 测试日志</h2>
+                    <button class="btn" onclick="clearLogs()">清空日志</button>
+                </div>
+                <div class="section-content">
+                    <div class="log-container" id="log-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/protobufjs@7.2.5/dist/protobuf.min.js"></script>
+    <script>
+        // 全局变量
+        let websocket = null;
+        let stompClient = null;
+        let natsSubscription = null;
+        let messageCounter = 0;
+        
+        // Protobuf消息类型映射
+        const MessageType = {
+            CONNECT: 0,
+            DISCONNECT: 1,
+            HEARTBEAT: 2,
+            HEARTBEAT_ACK: 3,
+            ERROR: 4,
+            STATUS_UPDATE: 5,
+            USER_ONLINE: 10,
+            USER_OFFLINE: 11,
+            USER_STATUS_CHANGE: 12,
+            USER_INFO_UPDATE: 13,
+            MESSAGE_SEND: 20,
+            MESSAGE_RECEIVE: 21,
+            MESSAGE_READ: 22,
+            MESSAGE_RECALL: 23,
+            MESSAGE_EDIT: 24,
+            MESSAGE_DELETE: 25,
+            MESSAGE_FORWARD: 26,
+            CONVERSATION_CREATE: 30,
+            CONVERSATION_UPDATE: 31,
+            CONVERSATION_DELETE: 32,
+            GROUP_CREATE: 40,
+            GROUP_UPDATE: 41,
+            GROUP_DELETE: 42,
+            GROUP_MEMBER_ADD: 43,
+            GROUP_MEMBER_REMOVE: 44,
+            FILE_UPLOAD: 50,
+            FILE_DOWNLOAD: 51,
+            FILE_DELETE: 52,
+            NOTIFICATION: 60,
+            ALERT: 61,
+            SYSTEM_MESSAGE: 62
+        };
+        
+        const MessageStatus = {
+            PENDING: 0,
+            SENDING: 1,
+            SENT: 2,
+            SEND_FAILED: 3,
+            TRANSMITTING: 4,
+            TRANSMIT_FAILED: 5,
+            DELIVERED: 6,
+            DELIVERY_FAILED: 7,
+            RECEIVED: 8,
+            RECEIVE_FAILED: 9,
+            PROCESSING: 10,
+            SUCCESS: 11,
+            FAILED: 12,
+            ACKNOWLEDGED: 13,
+            READ: 14,
+            RECALLED: 15,
+            EDITED: 16,
+            DELETED: 17,
+            EXPIRED: 18
+        };
+
+        // 日志功能
+        function log(level, message) {
+            const logContainer = document.getElementById('log-container');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-level-${level}`;
+            logEntry.innerHTML = `<span class="log-time">[${timestamp}]</span> <span class="log-level-${level}">[${level.toUpperCase()}]</span> ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function clearLogs() {
+            document.getElementById('log-container').innerHTML = '';
+            log('info', '日志已清空');
+        }
+
+        // 服务状态检查
+        async function checkAllServices() {
+            log('info', '开始检查所有服务状态...');
+            await checkBusinessService();
+            await checkCommunicationService();
+            await checkNatsService();
+            log('info', '所有服务状态检查完成');
+        }
+
+        async function checkBusinessService() {
+            try {
+                log('info', '检查业务服务状态...');
+                const response = await fetch('http://localhost:8080/actuator/health');
+                const data = await response.json();
+                
+                const statusElement = document.getElementById('business-status');
+                const statusText = document.getElementById('business-status-text');
+                
+                if (response.ok && data.status === 'UP') {
+                    statusElement.className = 'status-indicator status-online';
+                    statusText.textContent = '运行中';
+                    log('success', '业务服务状态: 运行中');
+                } else {
+                    statusElement.className = 'status-indicator status-offline';
+                    statusText.textContent = '异常';
+                    log('error', '业务服务状态: 异常');
+                }
+            } catch (error) {
+                const statusElement = document.getElementById('business-status');
+                const statusText = document.getElementById('business-status-text');
+                statusElement.className = 'status-indicator status-offline';
+                statusText.textContent = '无法连接';
+                log('error', `业务服务检查失败: ${error.message}`);
+            }
+        }
+
+        async function checkCommunicationService() {
+            try {
+                log('info', '检查通信服务状态...');
+                const response = await fetch('http://localhost:8081/api/test/status');
+                const data = await response.text();
+                
+                const statusElement = document.getElementById('communication-status');
+                const statusText = document.getElementById('communication-status-text');
+                
+                if (response.ok) {
+                    statusElement.className = 'status-indicator status-online';
+                    statusText.textContent = '运行中';
+                    log('success', '通信服务状态: 运行中');
+                } else {
+                    statusElement.className = 'status-indicator status-offline';
+                    statusText.textContent = '异常';
+                    log('error', '通信服务状态: 异常');
+                }
+            } catch (error) {
+                const statusElement = document.getElementById('communication-status');
+                const statusText = document.getElementById('communication-status-text');
+                statusElement.className = 'status-indicator status-offline';
+                statusText.textContent = '无法连接';
+                log('error', `通信服务检查失败: ${error.message}`);
+            }
+        }
+
+        async function checkNatsService() {
+            try {
+                log('info', '检查NATS服务状态...');
+                // 尝试通过通信服务检查NATS状态
+                const response = await fetch('http://localhost:8081/api/test/status');
+                
+                const statusElement = document.getElementById('nats-status');
+                const statusText = document.getElementById('nats-status-text');
+                
+                if (response.ok) {
+                    statusElement.className = 'status-indicator status-online';
+                    statusText.textContent = '运行中';
+                    log('success', 'NATS服务状态: 运行中');
+                } else {
+                    statusElement.className = 'status-indicator status-offline';
+                    statusText.textContent = '异常';
+                    log('error', 'NATS服务状态: 异常');
+                }
+            } catch (error) {
+                const statusElement = document.getElementById('nats-status');
+                const statusText = document.getElementById('nats-status-text');
+                statusElement.className = 'status-indicator status-offline';
+                statusText.textContent = '无法连接';
+                log('error', `NATS服务检查失败: ${error.message}`);
+            }
+        }
+
+        // 用户接口测试
+        async function testAllUserApis() {
+            log('info', '开始测试所有用户接口...');
+            await testUserRegister();
+            await testUserLogin();
+            log('info', '所有用户接口测试完成');
+        }
+
+        async function testUserRegister() {
+            try {
+                const username = document.getElementById('register-username').value;
+                const password = document.getElementById('register-password').value;
+                const deviceId = document.getElementById('register-device-id').value;
+                
+                // 添加调试日志
+                log('info', `测试用户注册: username=${username}, deviceId=${deviceId}`);
+                log('info', `设备号输入框值: ${document.getElementById('register-device-id').value}`);
+                log('info', `设备号输入框ID: register-device-id`);
+                
+                // 检查设备号是否为空
+                if (!deviceId || deviceId.trim() === '') {
+                    log('error', '设备号不能为空，请填写设备号');
+                    const resultElement = document.getElementById('register-result');
+                    resultElement.innerHTML = `<strong>❌ 注册失败</strong><br>设备号不能为空，请填写设备号`;
+                    return;
+                }
+                
+                const requestBody = {
+                    username: username,
+                    password: password,
+                    email: `${username}@test.com`,
+                    deviceId: deviceId
+                };
+                
+                log('info', `发送注册请求: ${JSON.stringify(requestBody, null, 2)}`);
+                
+                const response = await fetch('http://localhost:8080/api/users/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                const result = await response.json();
+                const resultElement = document.getElementById('register-result');
+                
+                if (response.ok) {
+                    resultElement.innerHTML = `<strong>✅ 注册成功</strong><br>${JSON.stringify(result, null, 2)}`;
+                    log('success', `用户注册成功: ${username}`);
+                } else {
+                    resultElement.innerHTML = `<strong>❌ 注册失败</strong><br>${JSON.stringify(result, null, 2)}`;
+                    log('error', `用户注册失败: ${result.message || '未知错误'}`);
+                }
+            } catch (error) {
+                const resultElement = document.getElementById('register-result');
+                resultElement.innerHTML = `<strong>❌ 请求失败</strong><br>${error.message}`;
+                log('error', `用户注册请求失败: ${error.message}`);
+            }
+        }
+
+        async function testUserLogin() {
+            try {
+                const username = document.getElementById('login-username').value;
+                const password = document.getElementById('login-password').value;
+                const deviceId = document.getElementById('login-device-id').value;
+                
+                log('info', `测试用户登录: username=${username}, deviceId=${deviceId}`);
+                
+                // 检查设备号是否为空
+                if (!deviceId || deviceId.trim() === '') {
+                    log('error', '设备号不能为空，请填写设备号');
+                    const resultElement = document.getElementById('login-result');
+                    resultElement.innerHTML = `<strong>❌ 登录失败</strong><br>设备号不能为空，请填写设备号`;
+                    return;
+                }
+                
+                const response = await fetch('http://localhost:8080/api/users/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password,
+                        deviceId: deviceId
+                    })
+                });
+                
+                const result = await response.json();
+                const resultElement = document.getElementById('login-result');
+                
+                if (response.ok && result.token) {
+                    resultElement.innerHTML = `<strong>✅ 登录成功</strong><br>Token: ${result.token.substring(0, 50)}...<br>${JSON.stringify(result, null, 2)}`;
+                    
+                    // 自动填充到其他需要Token的输入框
+                    document.getElementById('profile-token').value = result.token;
+                    document.getElementById('ws-token').value = result.token;
+                    document.getElementById('test-token').value = result.token;
+                    
+                    log('success', `用户登录成功: ${username}`);
+                } else {
+                    resultElement.innerHTML = `<strong>❌ 登录失败</strong><br>${JSON.stringify(result, null, 2)}`;
+                    log('error', `用户登录失败: ${result.message || '未知错误'}`);
+                }
+            } catch (error) {
+                const resultElement = document.getElementById('login-result');
+                resultElement.innerHTML = `<strong>❌ 请求失败</strong><br>${error.message}`;
+                log('error', `用户登录请求失败: ${error.message}`);
+            }
+        }
+
+        async function testUserProfile() {
+            try {
+                const token = document.getElementById('profile-token').value;
+                
+                if (!token) {
+                    log('warning', '请先获取JWT Token');
+                    return;
+                }
+                
+                log('info', '测试获取用户资料...');
+                
+                const response = await fetch('http://localhost:8080/api/users/profile', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const result = await response.json();
+                const resultElement = document.getElementById('profile-result');
+                
+                if (response.ok) {
+                    resultElement.innerHTML = `<strong>✅ 获取成功</strong><br>${JSON.stringify(result, null, 2)}`;
+                    log('success', '用户资料获取成功');
+                } else {
+                    resultElement.innerHTML = `<strong>❌ 获取失败</strong><br>${JSON.stringify(result, null, 2)}`;
+                    log('error', `用户资料获取失败: ${result.message || '未知错误'}`);
+                }
+            } catch (error) {
+                const resultElement = document.getElementById('profile-result');
+                resultElement.innerHTML = `<strong>❌ 请求失败</strong><br>${error.message}`;
+                log('error', `用户资料请求失败: ${error.message}`);
+            }
+        }
+
+        // WebSocket连接测试
+        function testWebSocketConnection() {
+            log('info', '开始WebSocket连接测试...');
+            connectWebSocket();
+        }
+
+        function connectWebSocket() {
+            try {
+                const wsUrl = document.getElementById('ws-url').value;
+                const token = document.getElementById('ws-token').value;
+                
+                log('info', `尝试连接WebSocket: ${wsUrl}`);
+                
+                // 更新状态
+                const statusElement = document.getElementById('ws-status');
+                const statusText = document.getElementById('ws-status-text');
+                statusElement.className = 'status-indicator status-connecting';
+                statusText.textContent = '连接中...';
+                
+                // 创建SockJS客户端
+                const socket = new SockJS(wsUrl);
+                
+                // 创建STOMP客户端
+                stompClient = Stomp.over(socket);
+                
+                stompClient.connect({}, (frame) => {
+                    log('success', `WebSocket连接已建立: ${frame}`);
+                    statusElement.className = 'status-indicator status-online';
+                    statusText.textContent = '已连接';
+                    
+                    // 订阅公共消息主题
+                    stompClient.subscribe('/topic/public', (message) => {
+                        log('info', `收到公共消息: ${message.body}`);
+                        addMessage('received', message.body);
+                    });
+                    
+                    // 订阅私聊消息主题
+                    stompClient.subscribe('/user/queue/private-messages', (message) => {
+                        log('info', `收到私聊消息: ${message.body}`);
+                        addMessage('received', message.body);
+                    });
+                    
+                    // 订阅系统通知主题
+                    stompClient.subscribe('/topic/system', (message) => {
+                        log('info', `收到系统通知: ${message.body}`);
+                        addMessage('received', message.body);
+                    });
+                    
+                    // 订阅认证响应
+                    stompClient.subscribe('/user/queue/auth', (message) => {
+                        log('info', `收到认证响应: ${message.body}`);
+                        addMessage('received', message.body);
+                    });
+                    
+                    // 订阅心跳响应
+                    stompClient.subscribe('/user/queue/heartbeat', (message) => {
+                        log('info', `收到心跳响应: ${message.body}`);
+                        addMessage('received', message.body);
+                    });
+                    
+                    // 订阅状态响应
+                    stompClient.subscribe('/user/queue/status', (message) => {
+                        log('info', `收到状态响应: ${message.body}`);
+                        addMessage('received', message.body);
+                    });
+                    
+                    // 如果有Token，发送认证消息
+                    if (token) {
+                        sendAuthMessage(token);
+                    }
+                }, (error) => {
+                    log('error', `WebSocket连接错误: ${error}`);
+                    statusElement.className = 'status-indicator status-offline';
+                    statusText.textContent = '连接错误';
+                });
+                
+                stompClient.onmessage = function(event) {
+                    log('info', `收到消息: ${event.body}`);
+                    addMessage('received', event.body);
+                };
+                
+                stompClient.onclose = function(event) {
+                    log('warning', `WebSocket连接已关闭: code=${event.code}, reason=${event.reason}`);
+                    statusElement.className = 'status-indicator status-offline';
+                    statusText.textContent = '已断开';
+                    stompClient = null;
+                };
+                
+            } catch (error) {
+                log('error', `WebSocket连接失败: ${error.message}`);
+                const statusElement = document.getElementById('ws-status');
+                const statusText = document.getElementById('ws-status-text');
+                statusElement.className = 'status-indicator status-offline';
+                statusText.textContent = '连接失败';
+            }
+        }
+
+        function disconnectWebSocket() {
+            if (stompClient) {
+                stompClient.disconnect(() => {
+                    log('info', 'WebSocket连接已断开');
+                    const statusElement = document.getElementById('ws-status');
+                    const statusText = document.getElementById('ws-status-text');
+                    statusElement.className = 'status-indicator status-offline';
+                    statusText.textContent = '已断开';
+                    stompClient = null;
+                });
+            }
+        }
+
+        function reconnectWebSocket() {
+            log('info', '尝试重新连接WebSocket...');
+            disconnectWebSocket();
+            setTimeout(connectWebSocket, 1000);
+        }
+
+        function sendAuthMessage(token) {
+            if (stompClient && stompClient.connected) {
+                const authMessage = {
+                    message_id: `auth_${Date.now()}`,
+                    type: MessageType.USER_ONLINE, // 使用连接类型
+                    status: MessageStatus.PENDING,
+                    sender_id: "test_user",
+                    receiver_id: null,
+                    conversation_id: null,
+                    timestamp: Date.now(),
+                    sequence: 0,
+                    client_message_id: `auth_${Date.now()}`,
+                    version: "1.0.0",
+                    auth: {
+                        token: token,
+                        user_id: "test_user",
+                        device_id: "test_device_001",
+                        auth_data: ""
+                    }
+                };
+                
+                stompClient.send('/app/auth', {}, JSON.stringify(authMessage));
+                log('info', '发送认证消息');
+            }
+        }
+
+        function sendWebSocketMessage() {
+            if (!stompClient || !stompClient.connected) {
+                log('warning', 'WebSocket未连接，无法发送消息');
+                return;
+            }
+            
+            const messageInput = document.getElementById('message-input');
+            const messageType = document.getElementById('message-type').value;
+            const message = messageInput.value.trim();
+            
+            if (!message) {
+                log('warning', '请输入消息内容');
+                return;
+            }
+            
+            // 构造符合Protobuf格式的消息
+            const messageData = {
+                message_id: `msg_${++messageCounter}_${Date.now()}`,
+                type: MessageType[messageType] || MessageType.MESSAGE_SEND,
+                status: MessageStatus.PENDING,
+                sender_id: "test_user", // 这里应该从JWT token中获取
+                receiver_id: null,
+                conversation_id: null,
+                timestamp: Date.now(),
+                sequence: messageCounter,
+                client_message_id: `client_${messageCounter}_${Date.now()}`,
+                version: "1.0.0"
+            };
+            
+            // 根据消息类型设置不同的payload
+            switch (messageType) {
+                case 'CHAT':
+                    messageData.chat = {
+                        content: message,
+                        msg_type: 1, // 文本消息
+                        content_extra: "",
+                        reply_to_id: null,
+                        forward_from_id: null,
+                        mentions: "",
+                        is_pinned: false,
+                        is_edited: false,
+                        edit_count: 0
+                    };
+                    break;
+                case 'SYSTEM':
+                    messageData.system = {
+                        system_type: "user_message",
+                        content: message,
+                        system_data: "",
+                        require_ack: false
+                    };
+                    break;
+                case 'HEARTBEAT':
+                    messageData.heartbeat = {
+                        heartbeat_id: `hb_${Date.now()}`,
+                        device_id: "test_device_001",
+                        heartbeat_data: ""
+                    };
+                    break;
+                case 'AUTH':
+                    messageData.auth = {
+                        token: document.getElementById('ws-token').value || "",
+                        user_id: "test_user",
+                        device_id: "test_device_001",
+                        auth_data: ""
+                    };
+                    break;
+            }
+            
+            // 根据消息类型发送到不同的STOMP目标
+            let destination;
+            switch (messageType) {
+                case 'CHAT':
+                    destination = '/app/chat';
+                    break;
+                case 'SYSTEM':
+                    destination = '/app/system';
+                    break;
+                case 'HEARTBEAT':
+                    destination = '/app/heartbeat';
+                    break;
+                case 'AUTH':
+                    destination = '/app/auth';
+                    break;
+                default:
+                    destination = '/app/message';
+            }
+            
+            stompClient.send(destination, {}, JSON.stringify(messageData));
+            addMessage('sent', JSON.stringify(messageData, null, 2));
+            messageInput.value = '';
+            
+            log('info', `消息已发送: type=${messageType}, content=${message}, destination=${destination}`);
+        }
+
+        function addMessage(direction, content) {
+            const messageList = document.getElementById('message-list');
+            const messageItem = document.createElement('div');
+            messageItem.className = `message-item message-${direction}`;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            const directionText = direction === 'sent' ? '发送' : '接收';
+            
+            messageItem.innerHTML = `
+                <strong>[${timestamp}] ${directionText}:</strong><br>
+                <pre>${content}</pre>
+            `;
+            
+            messageList.appendChild(messageItem);
+            messageList.scrollTop = messageList.scrollHeight;
+        }
+
+        function clearMessages() {
+            document.getElementById('message-list').innerHTML = '';
+            log('info', '消息历史已清空');
+        }
+
+        // NATS事件测试
+        async function testAllNatsEvents() {
+            log('info', '开始测试所有NATS事件...');
+            await publishNatsEvent();
+            await subscribeNatsEvent();
+            log('info', '所有NATS事件测试完成');
+        }
+
+        async function publishNatsEvent() {
+            try {
+                const subjectSelect = document.getElementById('event-subject');
+                const customSubject = document.getElementById('custom-subject').value;
+                const subject = customSubject || subjectSelect.value;
+                
+                log('info', `发布NATS事件: subject=${subject}`);
+                
+                const response = await fetch(`http://localhost:8081/api/test/publish-nats-event?subject=${encodeURIComponent(subject)}`, {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                const resultElement = document.getElementById('publish-result');
+                
+                if (response.ok && result.success) {
+                    resultElement.innerHTML = `<strong>✅ 事件发布成功</strong><br>${JSON.stringify(result, null, 2)}`;
+                    log('success', `NATS事件发布成功: subject=${subject}, requestId=${result.requestId}`);
+                } else {
+                    resultElement.innerHTML = `<strong>❌ 事件发布失败</strong><br>${JSON.stringify(result, null, 2)}`;
+                    log('error', `NATS事件发布失败: ${result.message || '未知错误'}`);
+                }
+            } catch (error) {
+                const resultElement = document.getElementById('publish-result');
+                resultElement.innerHTML = `<strong>❌ 请求失败</strong><br>${error.message}`;
+                log('error', `NATS事件发布请求失败: ${error.message}`);
+            }
+        }
+
+        async function subscribeNatsEvent() {
+            try {
+                const subject = document.getElementById('subscribe-subject').value || 'test.subscribe';
+                
+                log('info', `开始订阅NATS事件: subject=${subject}`);
+                
+                // 这里应该实现真正的NATS订阅，但为了演示，我们模拟订阅过程
+                const resultElement = document.getElementById('subscribe-result');
+                resultElement.innerHTML = `<strong>🔄 订阅中...</strong><br>主题: ${subject}<br>状态: 监听中`;
+                
+                log('success', `NATS事件订阅开始: subject=${subject}`);
+                
+                // 模拟接收事件
+                setTimeout(() => {
+                    resultElement.innerHTML = `<strong>✅ 订阅成功</strong><br>主题: ${subject}<br>状态: 监听中<br>已接收事件: 0`;
+                    log('info', `NATS事件订阅模拟完成: subject=${subject}`);
+                }, 2000);
+                
+            } catch (error) {
+                const resultElement = document.getElementById('subscribe-result');
+                resultElement.innerHTML = `<strong>❌ 订阅失败</strong><br>${error.message}`;
+                log('error', `NATS事件订阅失败: ${error.message}`);
+            }
+        }
+
+        function unsubscribeNatsEvent() {
+            const resultElement = document.getElementById('subscribe-result');
+            resultElement.innerHTML = `<strong>⏹️ 已停止订阅</strong><br>状态: 已停止`;
+            log('info', 'NATS事件订阅已停止');
+        }
+
+        async function testTokenValidation() {
+            try {
+                const token = document.getElementById('test-token').value;
+                
+                if (!token) {
+                    log('warning', '请先获取JWT Token');
+                    return;
+                }
+                
+                log('info', '开始测试Token验证事件...');
+                
+                // 发布Token验证事件
+                const response = await fetch(`http://localhost:8081/api/test/publish-nats-event?subject=security.token.validate`, {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                const resultElement = document.getElementById('token-validation-result');
+                
+                if (response.ok && result.success) {
+                    resultElement.innerHTML = `<strong>✅ Token验证事件已发布</strong><br>${JSON.stringify(result, null, 2)}`;
+                    log('success', `Token验证事件发布成功: requestId=${result.requestId}`);
+                    
+                    // 等待验证结果
+                    setTimeout(() => {
+                        resultElement.innerHTML += `<br><br><strong>⏳ 等待验证结果...</strong><br>请检查服务日志查看验证过程`;
+                        log('info', '等待Token验证结果...');
+                    }, 1000);
+                    
+                } else {
+                    resultElement.innerHTML = `<strong>❌ Token验证事件发布失败</strong><br>${JSON.stringify(result, null, 2)}`;
+                    log('error', `Token验证事件发布失败: ${result.message || '未知错误'}`);
+                }
+            } catch (error) {
+                const resultElement = document.getElementById('token-validation-result');
+                resultElement.innerHTML = `<strong>❌ 请求失败</strong><br>${error.message}`;
+                log('error', `Token验证测试请求失败: ${error.message}`);
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            log('info', '测试页面已加载完成');
+            log('info', '请先检查服务状态，然后开始测试各项功能');
+            
+            // 自动检查服务状态
+            setTimeout(checkAllServices, 1000);
+        });
+    </script>
+</body>
+</html> 

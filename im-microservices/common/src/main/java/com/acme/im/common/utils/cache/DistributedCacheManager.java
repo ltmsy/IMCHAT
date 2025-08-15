@@ -1,6 +1,7 @@
 package com.acme.im.common.utils.cache;
 
 import com.acme.im.common.infrastructure.nats.publisher.AsyncEventPublisher;
+import com.acme.im.common.infrastructure.nats.constants.EventTopics;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,11 +50,11 @@ public class DistributedCacheManager {
     private final ScheduledExecutorService cleanupExecutor = Executors.newSingleThreadScheduledExecutor(
             r -> new Thread(r, "cache-cleanup"));
     
-    // 缓存配置
-    private static final int DEFAULT_LOCAL_CACHE_SIZE = 10000;
-    private static final Duration DEFAULT_TTL = Duration.ofHours(1);
+    // 缓存配置常量
+    private static final Duration DEFAULT_TTL = Duration.ofMinutes(30);
+    private static final int DEFAULT_MAX_SIZE = 10000;
+    private static final String CACHE_KEY_PREFIX = "cache:";
     private static final Duration DEFAULT_LOCAL_TTL = Duration.ofMinutes(5);
-    private static final String CACHE_INVALIDATION_SUBJECT = "cache.invalidation";
     private static final String CACHE_PRELOAD_SUBJECT = "cache.preload";
     
     // 性能统计
@@ -198,7 +199,7 @@ public class DistributedCacheManager {
         // 启动统计任务
         cleanupExecutor.scheduleAtFixedRate(this::logStatistics, 5, 5, TimeUnit.MINUTES);
         
-        log.info("分布式缓存管理器初始化完成: 本地缓存大小限制={}", DEFAULT_LOCAL_CACHE_SIZE);
+        log.info("分布式缓存管理器初始化完成: 本地缓存大小限制={}", DEFAULT_MAX_SIZE);
     }
 
     /**
@@ -477,7 +478,7 @@ public class DistributedCacheManager {
      */
     private void putToLocalCache(String key, Object value, Duration ttl) {
         // 检查本地缓存大小限制
-        if (localCache.size() >= DEFAULT_LOCAL_CACHE_SIZE) {
+        if (localCache.size() >= DEFAULT_MAX_SIZE) {
             evictLeastUsed();
         }
 
@@ -537,7 +538,7 @@ public class DistributedCacheManager {
     private void publishInvalidationEvent(String key, String pattern, String source) {
         try {
             CacheInvalidationEvent event = new CacheInvalidationEvent(key, pattern, source);
-            eventPublisher.publishEventAsync(CACHE_INVALIDATION_SUBJECT, event);
+            eventPublisher.publishEventAsync(EventTopics.Common.Cache.INVALIDATED, event);
         } catch (Exception e) {
             log.warn("发布缓存失效事件失败: key={}, pattern={}", key, pattern, e);
         }

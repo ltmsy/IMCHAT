@@ -1,27 +1,50 @@
 server:
-  port: 8081
+  port: 8080
 
 spring:
   application:
     name: business-service
   
-  # 引用公共配置
+  # 引用公共配置 - 继承所有基础配置
   profiles:
     include: common
   
   main:
     allow-bean-definition-overriding: true
-  
-  # 服务特有的数据库配置
-  # 使用公共模块的MyBatis-Plus配置，无需额外配置
+    allow-circular-references: true
 
-# 业务服务特有配置
+# 业务服务特有配置 - 只配置业务相关的
 app:
-  security:
-    password-encoder-strength: 12
-  
-  # 数据源策略配置
-  datasource:
-    strategy: "auto"  # auto: 自动选择, primary: 强制主库, secondary: 强制从库
-    # 读操作默认使用从库，写操作使用主库
-    read-write-split: true 
+  business:
+    # 业务模块配置
+    modules:
+      user:
+        enabled: true
+        cache-ttl: 3600s
+      social:
+        enabled: true
+        friend-request-expire: 7d
+      group:
+        enabled: true
+        max-members: 500
+      message:
+        enabled: true
+        max-retention: 30d
+      file:
+        enabled: true
+        max-size: 100MB
+      search:
+        enabled: true
+        max-results: 100
+    
+    # 业务限流配置
+    rate-limit:
+      user-operation: 100/minute
+      group-operation: 50/minute
+      file-upload: 10/minute
+    
+    # 业务缓存配置
+    cache:
+      user-profile: 1h
+      group-info: 30m
+      friend-list: 15m 

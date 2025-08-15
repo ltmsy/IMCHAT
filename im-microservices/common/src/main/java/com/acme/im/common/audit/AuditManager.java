@@ -1,6 +1,6 @@
 package com.acme.im.common.audit;
 
-import com.acme.im.common.infrastructure.nats.publisher.EventPublisher;
+import com.acme.im.common.infrastructure.nats.publisher.AsyncEventPublisher;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 public class AuditManager {
 
     @Autowired
-    private EventPublisher eventPublisher;
+    private AsyncEventPublisher eventPublisher;
 
     // 审计日志缓存
     private final ConcurrentHashMap<String, AuditLog> auditLogCache = new ConcurrentHashMap<>();
@@ -413,7 +413,7 @@ public class AuditManager {
             event.setContext(new ConcurrentHashMap<>());
 
             String subject = "im.audit.event";
-            eventPublisher.publishEvent(subject, event);
+            eventPublisher.publishToJetStream(subject, event);
             log.debug("审计事件发布: eventType={}, userId={}, action={}", eventType, userId, action);
         } catch (Exception e) {
             log.error("发布审计事件异常: eventType={}, userId={}, action={}", eventType, userId, action, e);

@@ -12,7 +12,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * 负责实时通信、消息路由、推送等功能
  * 
  * 技术栈：
- * - Spring WebFlux：响应式Web框架
+ * - Spring Web：传统Web框架
+ * - Spring WebSocket：WebSocket支持
  * - NATS：事件总线和消息队列
  * - Redis：连接管理和消息缓存
  * - MySQL：消息存储（分表）

@@ -331,7 +331,9 @@ CREATE TABLE `files` (
     
     FOREIGN KEY (`uploader_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
     FOREIGN KEY (`conversation_id`) REFERENCES `conversations`(`id`) ON DELETE SET NULL,
-    FOREIGN KEY (`message_id`) REFERENCES `messages`(`id`) ON DELETE SET NULL,
+    -- 注意：message_id 外键引用需要根据实际分表情况处理
+    -- 由于消息使用分表存储，这里暂时不设置外键约束
+    -- 应用层需要确保 message_id 的有效性
     UNIQUE KEY `uk_file_hash` (`file_hash`),
     INDEX `idx_uploader` (`uploader_id`),
     INDEX `idx_conversation` (`conversation_id`),
@@ -491,6 +493,108 @@ CREATE TABLE `feature_flags` (
 -- 监控审计相关表
 -- ================================
 
+-- 事件记录表（NATS事件持久化）
+CREATE TABLE `event_records` (
+    `id` BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '记录ID',
+    `event_id` VARCHAR(64) UNIQUE NOT NULL COMMENT '事件ID',
+    `subject` VARCHAR(128) NOT NULL COMMENT '事件主题',
+    `event_type` VARCHAR(32) NOT NULL COMMENT '事件类型：REQUEST,RESPONSE,NOTIFICATION,BROADCAST',
+    `status` VARCHAR(32) NOT NULL COMMENT '事件状态：SUCCESS,FAILURE,PENDING,TIMEOUT',
+    `priority` VARCHAR(16) NOT NULL COMMENT '事件优先级：URGENT,HIGH,MEDIUM,LOW',
+    `source_service` VARCHAR(64) COMMENT '源服务名称',
+    `source_instance` VARCHAR(64) COMMENT '源实例ID',
+    `target_service` VARCHAR(64) COMMENT '目标服务名称',
+    `target_instance` VARCHAR(64) COMMENT '目标实例ID',
+    `user_id` VARCHAR(64) COMMENT '用户ID',
+    `device_id` VARCHAR(128) COMMENT '设备ID',
+    `session_id` VARCHAR(128) COMMENT '会话ID',
+    `event_data` JSON COMMENT '事件数据',
+    `metadata` JSON COMMENT '事件元数据',
+    `created_at` DATETIME NOT NULL COMMENT '创建时间',
+    `expires_at` DATETIME COMMENT '过期时间',
+    `retry_count` INT DEFAULT 0 COMMENT '重试次数',
+    `max_retries` INT DEFAULT 3 COMMENT '最大重试次数',
+    `error_message` TEXT COMMENT '错误信息',
+    `error_code` VARCHAR(64) COMMENT '错误代码',
+    `processing_time` BIGINT COMMENT '处理时间（毫秒）',
+    `persisted` TINYINT DEFAULT 0 COMMENT '是否已持久化',
+    `persisted_at` DATETIME COMMENT '持久化时间',
+    
+    INDEX `idx_event_id` (`event_id`),
+    INDEX `idx_subject` (`subject`),
+    INDEX `idx_event_type` (`event_type`),
+    INDEX `idx_status` (`status`),
+    INDEX `idx_priority` (`priority`),
+    INDEX `idx_source_service` (`source_service`),
+    INDEX `idx_target_service` (`target_service`),
+    INDEX `idx_user_id` (`user_id`),
+    INDEX `idx_device_id` (`device_id`),
+    INDEX `idx_session_id` (`session_id`),
+    INDEX `idx_created_at` (`created_at`),
+    INDEX `idx_expires_at` (`expires_at`),
+    INDEX `idx_error_code` (`error_code`),
+    INDEX `idx_persisted` (`persisted`),
+    INDEX `idx_retry` (`retry_count`, `max_retries`),
+    INDEX `idx_processing` (`status`, `created_at`),
+    INDEX `idx_high_priority` (`priority`, `created_at`),
+    INDEX `idx_failed_events` (`status`, `error_code`, `created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='NATS事件记录表';
+
+-- 事件统计表（用于快速查询事件统计信息）
+CREATE TABLE `event_statistics` (
+    `id` BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '统计ID',
+    `stat_date` DATE NOT NULL COMMENT '统计日期',
+    `subject` VARCHAR(128) NOT NULL COMMENT '事件主题',
+    `event_type` VARCHAR(32) NOT NULL COMMENT '事件类型',
+    `status` VARCHAR(32) NOT NULL COMMENT '事件状态',
+    `priority` VARCHAR(16) NOT NULL COMMENT '事件优先级',
+    `source_service` VARCHAR(64) COMMENT '源服务名称',
+    `count` BIGINT DEFAULT 0 COMMENT '事件数量',
+    `success_count` BIGINT DEFAULT 0 COMMENT '成功数量',
+    `failure_count` BIGINT DEFAULT 0 COMMENT '失败数量',
+    `avg_processing_time` BIGINT DEFAULT 0 COMMENT '平均处理时间（毫秒）',
+    `max_processing_time` BIGINT DEFAULT 0 COMMENT '最大处理时间（毫秒）',
+    `min_processing_time` BIGINT DEFAULT 0 COMMENT '最小处理时间（毫秒）',
+    `error_summary` JSON COMMENT '错误汇总信息',
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    
+    UNIQUE KEY `uk_date_subject_type_status_priority_service` (`stat_date`, `subject`, `event_type`, `status`, `priority`, `source_service`),
+    INDEX `idx_stat_date` (`stat_date`),
+    INDEX `idx_subject` (`subject`),
+    INDEX `idx_event_type` (`event_type`),
+    INDEX `idx_status` (`status`),
+    INDEX `idx_priority` (`priority`),
+    INDEX `idx_source_service` (`source_service`),
+    INDEX `idx_count` (`count`),
+    INDEX `idx_processing_time` (`avg_processing_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='事件统计表';
+
+-- 事件重试队列表（用于管理需要重试的事件）
+CREATE TABLE `event_retry_queue` (
+    `id` BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '队列ID',
+    `event_id` VARCHAR(64) NOT NULL COMMENT '事件ID',
+    `original_event_record_id` BIGINT NOT NULL COMMENT '原始事件记录ID',
+    `retry_count` INT DEFAULT 0 COMMENT '当前重试次数',
+    `max_retries` INT DEFAULT 3 COMMENT '最大重试次数',
+    `next_retry_at` DATETIME NOT NULL COMMENT '下次重试时间',
+    `retry_delay` INT DEFAULT 60 COMMENT '重试延迟（秒）',
+    `retry_reason` VARCHAR(255) COMMENT '重试原因',
+    `retry_strategy` VARCHAR(32) DEFAULT 'exponential' COMMENT '重试策略：fixed,exponential,linear',
+    `status` VARCHAR(32) DEFAULT 'PENDING' COMMENT '状态：PENDING,PROCESSING,SUCCESS,FAILED,ABANDONED',
+    `last_retry_at` DATETIME COMMENT '最后重试时间',
+    `last_retry_result` TEXT COMMENT '最后重试结果',
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    
+    FOREIGN KEY (`original_event_record_id`) REFERENCES `event_records`(`id`) ON DELETE CASCADE,
+    INDEX `idx_event_id` (`event_id`),
+    INDEX `idx_next_retry` (`next_retry_at`),
+    INDEX `idx_status` (`status`),
+    INDEX `idx_retry_count` (`retry_count`),
+    INDEX `idx_created` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='事件重试队列表';
+
 -- 敏感词表
 CREATE TABLE `sensitive_words` (
     `id` BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '词汇ID',
@@ -548,7 +652,8 @@ INSERT INTO `config_categories` (`name`, `key_name`, `description`, `is_system`,
 ('消息设置', 'message', '消息相关配置', 1, 3),
 ('文件设置', 'file', '文件相关配置', 1, 4),
 ('安全设置', 'security', '安全相关配置', 1, 5),
-('通知设置', 'notification', '通知相关配置', 1, 6);
+('通知设置', 'notification', '通知相关配置', 1, 6),
+('事件管理', 'event', 'NATS事件管理相关配置', 1, 7);
 
 -- 插入默认配置项
 INSERT INTO `config_items` (`category_id`, `key_name`, `display_name`, `value`, `default_value`, `value_type`, `description`) VALUES
@@ -563,7 +668,15 @@ INSERT INTO `config_items` (`category_id`, `key_name`, `display_name`, `value`, 
 (4, 'file.allowed_types', '允许的文件类型', '["jpg","jpeg","png","gif","pdf","doc","docx","xls","xlsx"]', '["jpg","jpeg","png","gif","pdf","doc","docx","xls","xlsx"]', 'json', '允许上传的文件类型'),
 (5, 'security.password_min_length', '密码最小长度', '8', '8', 'int', '用户密码最小长度'),
 (5, 'security.login_attempt_limit', '登录尝试次数限制', '5', '5', 'int', '登录失败次数限制'),
-(6, 'notification.push_enabled', '推送通知开关', '1', '1', 'bool', '是否启用推送通知');
+(6, 'notification.push_enabled', '推送通知开关', '1', '1', 'bool', '是否启用推送通知'),
+(7, 'event.persistence.enabled', '事件持久化开关', '1', '1', 'bool', '是否启用事件持久化'),
+(7, 'event.persistence.batch_size', '批量处理大小', '100', '100', 'int', '事件批量处理的数量'),
+(7, 'event.persistence.batch_interval', '批量处理间隔(毫秒)', '5000', '5000', 'int', '批量处理的时间间隔'),
+(7, 'event.persistence.max_cache_size', '最大缓存大小', '1000', '1000', 'int', '内存中缓存的最大事件数量'),
+(7, 'event.persistence.retention_days', '事件保留天数', '7', '7', 'int', '事件记录的保留天数（可定期清理）'),
+(7, 'event.persistence.retry_max_count', '最大重试次数', '3', '3', 'int', '事件处理失败后的最大重试次数'),
+(7, 'event.persistence.retry_delay', '重试延迟(秒)', '60', '60', 'int', '重试之间的延迟时间'),
+(7, 'event.persistence.cleanup_enabled', '定期清理开关', '1', '1', 'bool', '是否启用定期清理过期事件');
 
 -- 插入默认功能开关
 INSERT INTO `feature_flags` (`name`, `key_name`, `description`, `is_enabled`) VALUES
@@ -632,6 +745,8 @@ SET FOREIGN_KEY_CHECKS = 1;
 --    - 清理已撤回超过7天的消息（使用分表清理存储过程）
 --    - 清理已过期的好友申请和群组申请
 --    - 清理过期的连接记录和文件信息
+--    - 清理过期的事件记录（保留7天数据）
+--    - 清理过期的事件重试队列记录
 
 -- 2. 定期优化表
 --    - OPTIMIZE TABLE messages_xx; (分表优化)
@@ -647,6 +762,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 --    - 监控慢查询、锁等待
 --    - 监控磁盘空间、内存使用
 --    - 监控各消息分表的数据分布和性能
+--    - 监控事件记录表的数据增长和清理情况
 
 -- ================================
 -- 结束
@@ -654,4 +770,14 @@ SET FOREIGN_KEY_CHECKS = 1;
 
 -- 数据库初始化完成
 SELECT 'IM系统数据库初始化完成！' as message;
+SELECT '已创建以下核心表：' as info;
+SELECT '1. 用户管理相关表（users, user_devices, user_privacy_settings, user_blacklist）' as item;
+SELECT '2. 社交关系相关表（friendships, friend_requests, conversations, conversation_members, group_settings, group_join_requests）' as item;
+SELECT '3. 消息相关表（conversation_sequences, message_read_status, message_idempotency）' as item;
+SELECT '4. 内容管理相关表（files, favorites, favorite_folders）' as item;
+SELECT '5. 连接管理相关表（connections）' as item;
+SELECT '6. 系统配置相关表（config_categories, config_items, feature_flags）' as item;
+SELECT '7. 监控审计相关表（event_records, event_statistics, event_retry_queue, sensitive_words, content_audit_logs）' as item;
+SELECT '' as item;
+SELECT '注意：消息表使用分表存储（messages_00 ~ messages_31），事件表支持定期清理' as note;
 SELECT COUNT(*) as table_count FROM information_schema.tables WHERE table_schema = 'im_system'; 

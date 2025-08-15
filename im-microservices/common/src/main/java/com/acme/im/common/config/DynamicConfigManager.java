@@ -418,7 +418,7 @@ public class DynamicConfigManager {
      */
     public void refreshConfigs() {
         try {
-            log.debug("开始刷新配置缓存...");
+//            log.debug("开始刷新配置缓存...");
             
             // 清理过期缓存
             configCache.entrySet().removeIf(entry -> entry.getValue().isExpired());
@@ -432,7 +432,7 @@ public class DynamicConfigManager {
                 }
             }
             
-            log.debug("配置缓存刷新完成: 缓存大小={}", configCache.size());
+//            log.debug("配置缓存刷新完成: 缓存大小={}", configCache.size());
             
         } catch (Exception e) {
             log.error("刷新配置缓存异常", e);
